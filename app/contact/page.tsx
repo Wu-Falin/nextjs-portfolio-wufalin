@@ -1,63 +1,72 @@
 "use client";
-import { Github, Mail, Twitter } from "lucide-react";
-import Link from "next/link";
-import { Navigation } from "../components/nav";
-import { Card } from "../components/card";
 
+import { Github, Mail } from "lucide-react";
+import Link from "next/link";
+import { Card } from "../components/card";
+import { Navigation } from "../components/nav";
+
+// Only real, verified handles belong here. Placeholder for later: add LinkedIn,
+// a CV link, or a security platform profile once those URLs actually exist.
 const socials = [
 	{
-		icon: <Twitter size={20} />,
-		href: "https://twitter.com/chronark_",
-		label: "Twitter",
-		handle: "@chronark_",
-	},
-	{
-		icon: <Mail size={20} />,
-		href: "mailto:dev@chronark.com",
+		icon: <Mail size={18} />,
+		href: "mailto:valynndo@gmail.com",
 		label: "Email",
-		handle: "dev@chronark.com",
+		handle: "valynndo@gmail.com",
 	},
 	{
-		icon: <Github size={20} />,
-		href: "https://github.com/chronark",
-		label: "Github",
-		handle: "chronark",
+		icon: <Github size={18} />,
+		href: "https://github.com/Wu-Falin",
+		label: "GitHub",
+		handle: "Wu-Falin",
 	},
 ];
 
-export default function Example() {
+export default function ContactPage() {
 	return (
-		<div className=" bg-gradient-to-tl from-zinc-900/0 via-zinc-900 to-zinc-900/0">
+		<div className="relative min-h-screen">
 			<Navigation />
-			<div className="container flex items-center justify-center min-h-screen px-4 mx-auto">
-				<div className="grid w-full grid-cols-1 gap-8 mx-auto mt-32 sm:mt-0 sm:grid-cols-3 lg:gap-16">
-					{socials.map((s) => (
-						<Card>
+
+			<main className="mx-auto max-w-3xl px-6 pb-24 pt-28 lg:pt-32">
+				<header>
+					<p className="font-mono text-[11px] uppercase tracking-[0.35em] text-faint">
+						03 / contact
+					</p>
+					<h1 className="mt-4 text-3xl font-semibold tracking-tight text-fg sm:text-4xl">
+						Get in touch
+					</h1>
+					<p className="mt-4 max-w-xl text-sm leading-relaxed text-muted">
+						Open to junior penetration testing roles, internships, and anything
+						else where I can keep learning offensive security in practice.
+					</p>
+				</header>
+
+				<div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2">
+					{socials.map((social) => (
+						<Card key={social.label}>
 							<Link
-								href={s.href}
-								target="_blank"
-								className="p-4 relative flex flex-col items-center gap-4 duration-700 group md:gap-8 md:py-24  lg:pb-48  md:p-16"
+								href={social.href}
+								target={social.href.startsWith("http") ? "_blank" : undefined}
+								rel={social.href.startsWith("http") ? "noreferrer" : undefined}
+								className="relative flex flex-col gap-6 p-8"
 							>
-								<span
-									className="absolute w-px h-2/3 bg-gradient-to-b from-zinc-500 via-zinc-500/50 to-transparent"
-									aria-hidden="true"
-								/>
-								<span className="relative z-10 flex items-center justify-center w-12 h-12 text-sm duration-1000 border rounded-full text-zinc-200 group-hover:text-white group-hover:bg-zinc-900 border-zinc-500 bg-zinc-900 group-hover:border-zinc-200 drop-shadow-orange">
-									{s.icon}
-								</span>{" "}
-								<div className="z-10 flex flex-col items-center">
-									<span className="lg:text-xl font-medium duration-150 xl:text-3xl text-zinc-200 group-hover:text-white font-display">
-										{s.handle}
+								<span className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border border-line text-muted duration-500 group-hover:border-accent/60 group-hover:text-accent">
+									{social.icon}
+								</span>
+
+								<span className="relative z-10 flex flex-col gap-1">
+									<span className="font-mono text-[11px] uppercase tracking-[0.2em] text-faint">
+										{social.label}
 									</span>
-									<span className="mt-4 text-sm text-center duration-1000 text-zinc-400 group-hover:text-zinc-200">
-										{s.label}
+									<span className="break-all text-base font-medium text-fg duration-500 group-hover:text-accent">
+										{social.handle}
 									</span>
-								</div>
+								</span>
 							</Link>
 						</Card>
 					))}
 				</div>
-			</div>
+			</main>
 		</div>
 	);
 }

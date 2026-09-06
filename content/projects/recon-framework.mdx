@@ -1,0 +1,72 @@
+---
+title: Authorized-Target Recon Framework
+description: A CLI reconnaissance tool with an authorization gate built into its control flow. Without a scope file and a typed confirmation there is no code path that reaches a scan.
+date: "2026-06-09"
+published: true
+repository: Wu-Falin/recon-framework
+tag: WSTG-INFO
+---
+
+Passive reconnaissance against a target you are not allowed to touch is not a
+configuration mistake, it is a different activity with different consequences.
+So this tool treats scope as a structural precondition rather than a warning
+banner: the scan functions are unreachable until authorization has been proven.
+
+## The authorization gate
+
+Two things have to happen before any collection runs.
+
+**A scope file.** A signed off file listing the domains and ranges in scope, the
+out of scope exclusions, the engagement window, and a contact. The tool parses
+it, refuses partial or malformed files, and refuses wildcards that would widen
+scope beyond what is written down.
+
+**A typed confirmation.** The operator retypes the primary target after the
+resolved scope is printed back to them. Not a `y/N` prompt - a `y` is muscle
+memory, retyping a hostname is not.
+
+```python
+def run(args: Args) -> int:
+    scope = load_scope(args.scope_file)   # raises on a missing or invalid file
+    if not scope.covers(args.target):
+        raise OutOfScope(args.target)
+    if scope.expired():
+        raise WindowClosed(scope.window)
+
+    print(scope.summary())
+    if input(f"Retype the target to confirm ({args.target}): ") != args.target:
+        raise NotConfirmed()
+
+    # Nothing above this line touched the network, and nothing below it runs
+    # without an authorization object to pass down.
+    return collect(scope.authorize(args.target))
+```
+
+Every collection module takes an `Authorization` object as an argument. There is
+no default, no environment variable that stands in for one, and no flag that
+skips the check - a module simply cannot be called without one. That is the
+difference between a gate and a warning: you cannot forget to read it.
+
+Everything is logged with a timestamp, the scope file hash, and the target, so
+the run is auditable after the fact.
+
+## What it collects
+
+- **Passive subdomain enumeration** from certificate transparency logs and
+  public DNS datasets, plus resolution of what comes back. No brute forcing by
+  default, because that is traffic to the target.
+- **OSINT collection** - public registration data, published contacts, exposed
+  technology fingerprints, and anything already indexed publicly.
+- **Normalised output** as JSON, so the results feed into the next phase instead
+  of being copied out of a terminal by hand.
+
+Everything in scope is out of scope until the scope file says otherwise, and
+results are filtered against the exclusion list on the way out as well as on the
+way in.
+
+## Where it maps
+
+The OWASP WSTG **INFO** series - information gathering. Building it was less
+about the collection itself, which is well covered ground, and more about
+practising the discipline the section assumes: know your scope, record it, and
+be able to show afterwards exactly what you touched.

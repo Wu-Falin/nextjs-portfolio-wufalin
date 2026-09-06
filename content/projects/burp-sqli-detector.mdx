@@ -1,0 +1,64 @@
+---
+title: Burp Suite SQL Injection Detection Extension
+description: A Burp Suite extension that automates SQL injection detection across error, boolean and time based signals, and scores its confidence. Detection only - exploitation stays a manual, deliberate step.
+date: "2026-02-24"
+published: true
+repository: Wu-Falin/burp-sqli-detector
+tag: WSTG-INPVAL-05
+---
+
+An extension that watches traffic passing through Burp, probes parameters that
+look injectable, and reports what it finds with a confidence score attached. It
+stops at detection. It will tell you a parameter is very likely injectable; it
+will not dump the database for you.
+
+## The three signals
+
+Each candidate parameter is tested with a small, ordered set of probes, and the
+findings are combined rather than trusted individually.
+
+**Error based.** Send syntax breaking payloads and match the response against a
+library of database error fingerprints. A raw driver error is the strongest
+single signal there is, but it only appears on verbose targets.
+
+**Boolean based.** Send a pair of payloads whose only difference is a condition
+that is always true versus always false. If the two responses differ in a way
+the baseline noise does not explain, the parameter is reaching a query. The
+comparison normalises out timestamps, tokens and other per request churn before
+diffing, otherwise every dynamic page looks injectable.
+
+**Time based.** The fallback for targets that return nothing useful. Inject a
+conditional delay and check whether the response time moves with it. Each timing
+result is confirmed with repeat requests against a measured baseline, because a
+single slow response is a network hiccup, not a finding.
+
+## Scoring instead of shouting
+
+Every signal contributes weighted evidence rather than flipping a boolean:
+
+| Signal | Weight | Why |
+| --- | --- | --- |
+| Database error fingerprint | High | Near unambiguous when it matches |
+| Stable boolean divergence | High | Hard to reproduce by accident |
+| Repeatable timing delta | Medium | Real, but the noisiest of the three |
+| Reflected payload only | Low | Suggestive on its own, nothing more |
+
+A finding is only raised above "informational" when the evidence survives a
+confirmation pass. The point is to cut the false positive rate that makes
+automated results tedious to triage - the reviewer should be reading a short
+list, not sifting one.
+
+## Why it stops at detection
+
+Detection is safe to automate: it is a handful of extra requests that a scanner
+would send anyway. Exploitation is not. Data extraction against a live target
+changes the blast radius of a mistake, and it needs a human who knows what is in
+scope and what the engagement allows. So the extension hands over the parameter,
+the payloads that worked, and the evidence, and the operator decides what
+happens next.
+
+## Where it maps
+
+**WSTG-INPVAL-05, Testing for SQL Injection.** Writing the detection logic meant
+reading that section closely enough to understand why each technique exists and
+what each one gets wrong on its own.

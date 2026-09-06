@@ -1,40 +1,58 @@
 import type { Project } from "@/.contentlayer/generated";
+import { Eye } from "lucide-react";
 import Link from "next/link";
-import { Eye, View } from "lucide-react";
 
 type Props = {
 	project: Project;
 	views: number;
+	index: number;
 };
 
-export const Article: React.FC<Props> = ({ project, views }) => {
+/**
+ * One row of the project list: the title carries the link, and a single quiet
+ * line underneath holds the date and the tag it maps to.
+ */
+export const Article: React.FC<Props> = ({ project, views, index }) => {
 	return (
-		<Link href={`/projects/${project.slug}`}>
-			<article className="p-4 md:p-8">
-				<div className="flex justify-between gap-2 items-center">
-					<span className="text-xs duration-1000 text-zinc-200 group-hover:text-white group-hover:border-zinc-200 drop-shadow-orange">
+		<li className="group border-b border-line">
+			<Link href={`/projects/${project.slug}`} className="flex items-baseline gap-4 py-7">
+				<span className="font-mono text-[11px] tabular-nums text-faint transition-colors duration-300 group-hover:text-accent">
+					{String(index + 1).padStart(2, "0")}
+				</span>
+
+				<div className="min-w-0 flex-1">
+					<h2 className="text-xl font-bold tracking-tight text-fg transition-colors duration-300 group-hover:text-accent sm:text-2xl">
+						{project.title}
+					</h2>
+
+					<p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-faint">
 						{project.date ? (
 							<time dateTime={new Date(project.date).toISOString()}>
-								{Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(
+								{Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(
 									new Date(project.date),
 								)}
 							</time>
 						) : (
-							<span>SOON</span>
+							<span>Soon</span>
 						)}
-					</span>
-					<span className="text-zinc-500 text-xs  flex items-center gap-1">
-						<Eye className="w-4 h-4" />{" "}
+						{project.tag ? (
+							<>
+								<span aria-hidden="true" className="text-line">
+									/
+								</span>
+								<span className="uppercase tracking-[0.12em]">{project.tag}</span>
+							</>
+						) : null}
+					</p>
+				</div>
+
+				{views > 0 ? (
+					<span className="flex shrink-0 items-center gap-1 font-mono text-[11px] text-faint">
+						<Eye className="h-3.5 w-3.5" />
 						{Intl.NumberFormat("en-US", { notation: "compact" }).format(views)}
 					</span>
-				</div>
-				<h2 className="z-20 text-xl font-medium duration-1000 lg:text-3xl text-zinc-200 group-hover:text-white font-display">
-					{project.title}
-				</h2>
-				<p className="z-20 mt-4 text-sm  duration-1000 text-zinc-400 group-hover:text-zinc-200">
-					{project.description}
-				</p>
-			</article>
-		</Link>
+				) : null}
+			</Link>
+		</li>
 	);
 };

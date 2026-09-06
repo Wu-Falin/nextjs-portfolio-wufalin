@@ -1,7 +1,6 @@
-import { Redis } from "@upstash/redis";
 import { NextRequest, NextResponse } from "next/server";
+import { getRedis } from "@/util/redis";
 
-const redis = Redis.fromEnv();
 export const config = {
   runtime: "edge",
 };
@@ -22,26 +21,39 @@ export default async function incr(req: NextRequest): Promise<NextResponse> {
   if (!slug) {
     return new NextResponse("Slug not found", { status: 400 });
   }
-  const ip = req.ip;
-  if (ip) {
-    // Hash the IP in order to not store it directly in your db.
-    const buf = await crypto.subtle.digest(
-      "SHA-256",
-      new TextEncoder().encode(ip),
-    );
-    const hash = Array.from(new Uint8Array(buf))
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
 
-    // deduplicate the ip for each slug
-    const isNew = await redis.set(["deduplicate", hash, slug].join(":"), true, {
-      nx: true,
-      ex: 24 * 60 * 60,
-    });
-    if (!isNew) {
-      new NextResponse(null, { status: 202 });
-    }
+  // Counting pageviews is a nice-to-have. Without credentials we accept the
+  // request and do nothing, so the site still works with no Upstash database.
+  const redis = getRedis();
+  if (!redis) {
+    return new NextResponse(null, { status: 202 });
   }
-  await redis.incr(["pageviews", "projects", slug].join(":"));
+
+  try {
+    const ip = req.ip;
+    if (ip) {
+      // Hash the IP in order to not store it directly in your db.
+      const buf = await crypto.subtle.digest(
+        "SHA-256",
+        new TextEncoder().encode(ip),
+      );
+      const hash = Array.from(new Uint8Array(buf))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+
+      // deduplicate the ip for each slug
+      const isNew = await redis.set(["deduplicate", hash, slug].join(":"), true, {
+        nx: true,
+        ex: 24 * 60 * 60,
+      });
+      if (!isNew) {
+        return new NextResponse(null, { status: 202 });
+      }
+    }
+    await redis.incr(["pageviews", "projects", slug].join(":"));
+  } catch {
+    // A counter outage should never surface as an error to the visitor.
+  }
+
   return new NextResponse(null, { status: 202 });
 }

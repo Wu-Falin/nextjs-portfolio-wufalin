@@ -1,233 +1,292 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
-import { useMousePosition } from "@/util/mouse";
+import React, { useEffect, useRef } from "react";
 
 interface ParticlesProps {
 	className?: string;
-	quantity?: number;
-	staticity?: number;
-	ease?: number;
-	refresh?: boolean;
+	/** Particles per million square pixels of canvas. */
+	density?: number;
+	/** Hard ceiling, so a 4K monitor does not spawn thousands of dots. */
+	maxCount?: number;
 }
+
+/*
+ * An ambient drift field.
+ *
+ * Each particle reads its heading from a slowly evolving 3D value-noise field
+ * (x, y, time). Neighbouring particles therefore sample almost the same angle
+ * and move together, which reads as a soft monochrome current rather than
+ * random jitter. The technique is the standard "flow field over Perlin/value
+ * noise" recipe you find in generative art write-ups; the noise below is a
+ * compact value-noise implementation with a fifth order fade curve.
+ *
+ * Budget notes: capped device pixel ratio, capped particle count, a 30fps
+ * throttle, no work while the tab is hidden, and a single static frame when the
+ * visitor asks for reduced motion.
+ */
+
+const TAU = Math.PI * 2;
+const TARGET_FPS = 30;
+const FRAME_MS = 1000 / TARGET_FPS;
+/** How tightly the field swirls. Smaller = broader, calmer currents. */
+const FIELD_SCALE = 0.0016;
+/** How fast the field itself morphs, per throttled frame. */
+const FIELD_DRIFT = 0.0022;
+const MAX_DPR = 1.5;
+
+// --- value noise ----------------------------------------------------------
+
+const PERM = new Uint8Array(512);
+
+(() => {
+	// Deterministic shuffle, so the field looks the same on server-less reloads.
+	const table = new Uint8Array(256);
+	for (let i = 0; i < 256; i++) {
+		table[i] = i;
+	}
+	let seed = 20240917;
+	for (let i = 255; i > 0; i--) {
+		seed = (seed * 1664525 + 1013904223) >>> 0;
+		const j = seed % (i + 1);
+		const swap = table[i];
+		table[i] = table[j];
+		table[j] = swap;
+	}
+	for (let i = 0; i < 512; i++) {
+		PERM[i] = table[i & 255];
+	}
+})();
+
+const fade = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+const corner = (x: number, y: number, z: number) =>
+	PERM[(PERM[(PERM[x & 255] + y) & 255] + z) & 255] / 255;
+
+function noise3(x: number, y: number, z: number): number {
+	const xi = Math.floor(x);
+	const yi = Math.floor(y);
+	const zi = Math.floor(z);
+	const u = fade(x - xi);
+	const v = fade(y - yi);
+	const w = fade(z - zi);
+
+	const c000 = corner(xi, yi, zi);
+	const c100 = corner(xi + 1, yi, zi);
+	const c010 = corner(xi, yi + 1, zi);
+	const c110 = corner(xi + 1, yi + 1, zi);
+	const c001 = corner(xi, yi, zi + 1);
+	const c101 = corner(xi + 1, yi, zi + 1);
+	const c011 = corner(xi, yi + 1, zi + 1);
+	const c111 = corner(xi + 1, yi + 1, zi + 1);
+
+	const x00 = lerp(c000, c100, u);
+	const x10 = lerp(c010, c110, u);
+	const x01 = lerp(c001, c101, u);
+	const x11 = lerp(c011, c111, u);
+
+	return lerp(lerp(x00, x10, v), lerp(x01, x11, v), w);
+}
+
+// --- component ------------------------------------------------------------
+
+type Particle = {
+	x: number;
+	y: number;
+	vx: number;
+	vy: number;
+	radius: number;
+	alpha: number;
+	age: number;
+	ttl: number;
+	speed: number;
+};
 
 export default function Particles({
 	className = "",
-	quantity = 30,
-	staticity = 50,
-	ease = 50,
-	refresh = false,
+	density = 55,
+	maxCount = 140,
 }: ParticlesProps) {
+	const containerRef = useRef<HTMLDivElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const canvasContainerRef = useRef<HTMLDivElement>(null);
-	const context = useRef<CanvasRenderingContext2D | null>(null);
-	const circles = useRef<any[]>([]);
-	const mousePosition = useMousePosition();
-	const mouse = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-	const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
-	const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
 
 	useEffect(() => {
-		if (canvasRef.current) {
-			context.current = canvasRef.current.getContext("2d");
-		}
-		initCanvas();
-		animate();
-		window.addEventListener("resize", initCanvas);
+		const container = containerRef.current;
+		const canvas = canvasRef.current;
+		if (!container || !canvas) return;
+
+		const ctx = canvas.getContext("2d");
+		if (!ctx) return;
+
+		const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+		let width = 0;
+		let height = 0;
+		let dpr = 1;
+		let particles: Particle[] = [];
+		let fieldTime = 0;
+		let frame = 0;
+		let lastFrame = 0;
+		let tint = "255, 255, 255";
+		let tintOpacity = 1;
+
+		const readTheme = () => {
+			const styles = getComputedStyle(document.documentElement);
+			const channels = styles.getPropertyValue("--field").trim();
+			if (channels) {
+				tint = channels.split(/[\s,]+/).join(", ");
+			}
+			const opacity = Number.parseFloat(
+				styles.getPropertyValue("--field-opacity"),
+			);
+			tintOpacity = Number.isFinite(opacity) ? opacity : 1;
+		};
+
+		const spawn = (fresh: boolean): Particle => ({
+			x: Math.random() * width,
+			y: Math.random() * height,
+			vx: 0,
+			vy: 0,
+			radius: Math.random() * 1.1 + 0.35,
+			alpha: Math.random() * 0.35 + 0.08,
+			// Stagger the initial ages so the first fade-in is not synchronised.
+			age: fresh ? Math.random() * 240 : 0,
+			ttl: 420 + Math.random() * 480,
+			speed: 0.35 + Math.random() * 0.65,
+		});
+
+		const populate = () => {
+			const target = Math.min(
+				maxCount,
+				Math.max(24, Math.round(((width * height) / 1_000_000) * density)),
+			);
+			particles = Array.from({ length: target }, () => spawn(true));
+		};
+
+		const resize = () => {
+			width = container.clientWidth;
+			height = container.clientHeight;
+			dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+			canvas.width = Math.floor(width * dpr);
+			canvas.height = Math.floor(height * dpr);
+			canvas.style.width = `${width}px`;
+			canvas.style.height = `${height}px`;
+			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+			populate();
+		};
+
+		const step = () => {
+			fieldTime += FIELD_DRIFT;
+
+			for (let i = 0; i < particles.length; i++) {
+				const p = particles[i];
+				// Two turns of the field give the current a little more character
+				// than a single sweep from 0 to 2pi.
+				const angle =
+					noise3(p.x * FIELD_SCALE, p.y * FIELD_SCALE, fieldTime) * TAU * 2;
+
+				// Ease towards the field heading instead of snapping to it.
+				p.vx = p.vx * 0.94 + Math.cos(angle) * p.speed * 0.06;
+				p.vy = p.vy * 0.94 + Math.sin(angle) * p.speed * 0.06;
+				p.x += p.vx;
+				p.y += p.vy;
+				p.age += 1;
+
+				const offscreen =
+					p.x < -8 || p.x > width + 8 || p.y < -8 || p.y > height + 8;
+				if (offscreen || p.age > p.ttl) {
+					particles[i] = spawn(false);
+				}
+			}
+		};
+
+		const draw = () => {
+			ctx.clearRect(0, 0, width, height);
+			ctx.fillStyle = `rgb(${tint})`;
+
+			for (const p of particles) {
+				// Fade in over the first ~2s and back out over the last ~2s of life.
+				const rise = Math.min(p.age / 60, 1);
+				const fall = Math.min((p.ttl - p.age) / 60, 1);
+				const envelope = Math.max(0, Math.min(rise, fall));
+				ctx.globalAlpha = p.alpha * envelope * tintOpacity;
+				ctx.beginPath();
+				ctx.arc(p.x, p.y, p.radius, 0, TAU);
+				ctx.fill();
+			}
+
+			ctx.globalAlpha = 1;
+		};
+
+		const loop = (now: number) => {
+			frame = window.requestAnimationFrame(loop);
+			const elapsed = now - lastFrame;
+			if (elapsed < FRAME_MS) return;
+			lastFrame = now - (elapsed % FRAME_MS);
+			step();
+			draw();
+		};
+
+		const stop = () => {
+			if (frame) {
+				window.cancelAnimationFrame(frame);
+				frame = 0;
+			}
+		};
+
+		const start = () => {
+			stop();
+			if (reduceMotion.matches) {
+				// One quiet, still frame: the texture without the movement.
+				draw();
+				return;
+			}
+			lastFrame = performance.now();
+			frame = window.requestAnimationFrame(loop);
+		};
+
+		const onVisibility = () => {
+			if (document.hidden) {
+				stop();
+			} else {
+				start();
+			}
+		};
+
+		const onResize = () => {
+			resize();
+			start();
+		};
+
+		// The tint lives in a CSS custom property, so follow theme changes.
+		const themeObserver = new MutationObserver(() => {
+			readTheme();
+			if (reduceMotion.matches) draw();
+		});
+		themeObserver.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ["class"],
+		});
+
+		readTheme();
+		resize();
+		start();
+
+		window.addEventListener("resize", onResize);
+		document.addEventListener("visibilitychange", onVisibility);
+		reduceMotion.addEventListener("change", start);
 
 		return () => {
-			window.removeEventListener("resize", initCanvas);
+			stop();
+			themeObserver.disconnect();
+			window.removeEventListener("resize", onResize);
+			document.removeEventListener("visibilitychange", onVisibility);
+			reduceMotion.removeEventListener("change", start);
 		};
-	}, []);
-
-	useEffect(() => {
-		onMouseMove();
-	}, [mousePosition.x, mousePosition.y]);
-
-	useEffect(() => {
-		initCanvas();
-	}, [refresh]);
-
-	const initCanvas = () => {
-		resizeCanvas();
-		drawParticles();
-	};
-
-	const onMouseMove = () => {
-		if (canvasRef.current) {
-			const rect = canvasRef.current.getBoundingClientRect();
-			const { w, h } = canvasSize.current;
-			const x = mousePosition.x - rect.left - w / 2;
-			const y = mousePosition.y - rect.top - h / 2;
-			const inside = x < w / 2 && x > -w / 2 && y < h / 2 && y > -h / 2;
-			if (inside) {
-				mouse.current.x = x;
-				mouse.current.y = y;
-			}
-		}
-	};
-
-	type Circle = {
-		x: number;
-		y: number;
-		translateX: number;
-		translateY: number;
-		size: number;
-		alpha: number;
-		targetAlpha: number;
-		dx: number;
-		dy: number;
-		magnetism: number;
-	};
-
-	const resizeCanvas = () => {
-		if (canvasContainerRef.current && canvasRef.current && context.current) {
-			circles.current.length = 0;
-			canvasSize.current.w = canvasContainerRef.current.offsetWidth;
-			canvasSize.current.h = canvasContainerRef.current.offsetHeight;
-			canvasRef.current.width = canvasSize.current.w * dpr;
-			canvasRef.current.height = canvasSize.current.h * dpr;
-			canvasRef.current.style.width = `${canvasSize.current.w}px`;
-			canvasRef.current.style.height = `${canvasSize.current.h}px`;
-			context.current.scale(dpr, dpr);
-		}
-	};
-
-	const circleParams = (): Circle => {
-		const x = Math.floor(Math.random() * canvasSize.current.w);
-		const y = Math.floor(Math.random() * canvasSize.current.h);
-		const translateX = 0;
-		const translateY = 0;
-		const size = Math.floor(Math.random() * 2) + 0.1;
-		const alpha = 0;
-		const targetAlpha = parseFloat((Math.random() * 0.6 + 0.1).toFixed(1));
-		const dx = (Math.random() - 0.5) * 0.2;
-		const dy = (Math.random() - 0.5) * 0.2;
-		const magnetism = 0.1 + Math.random() * 4;
-		return {
-			x,
-			y,
-			translateX,
-			translateY,
-			size,
-			alpha,
-			targetAlpha,
-			dx,
-			dy,
-			magnetism,
-		};
-	};
-
-	const drawCircle = (circle: Circle, update = false) => {
-		if (context.current) {
-			const { x, y, translateX, translateY, size, alpha } = circle;
-			context.current.translate(translateX, translateY);
-			context.current.beginPath();
-			context.current.arc(x, y, size, 0, 2 * Math.PI);
-			context.current.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-			context.current.fill();
-			context.current.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-			if (!update) {
-				circles.current.push(circle);
-			}
-		}
-	};
-
-	const clearContext = () => {
-		if (context.current) {
-			context.current.clearRect(
-				0,
-				0,
-				canvasSize.current.w,
-				canvasSize.current.h,
-			);
-		}
-	};
-
-	const drawParticles = () => {
-		clearContext();
-		const particleCount = quantity;
-		for (let i = 0; i < particleCount; i++) {
-			const circle = circleParams();
-			drawCircle(circle);
-		}
-	};
-
-	const remapValue = (
-		value: number,
-		start1: number,
-		end1: number,
-		start2: number,
-		end2: number,
-	): number => {
-		const remapped =
-			((value - start1) * (end2 - start2)) / (end1 - start1) + start2;
-		return remapped > 0 ? remapped : 0;
-	};
-
-	const animate = () => {
-		clearContext();
-		circles.current.forEach((circle: Circle, i: number) => {
-			// Handle the alpha value
-			const edge = [
-				circle.x + circle.translateX - circle.size, // distance from left edge
-				canvasSize.current.w - circle.x - circle.translateX - circle.size, // distance from right edge
-				circle.y + circle.translateY - circle.size, // distance from top edge
-				canvasSize.current.h - circle.y - circle.translateY - circle.size, // distance from bottom edge
-			];
-			const closestEdge = edge.reduce((a, b) => Math.min(a, b));
-			const remapClosestEdge = parseFloat(
-				remapValue(closestEdge, 0, 20, 0, 1).toFixed(2),
-			);
-			if (remapClosestEdge > 1) {
-				circle.alpha += 0.02;
-				if (circle.alpha > circle.targetAlpha) {
-					circle.alpha = circle.targetAlpha;
-				}
-			} else {
-				circle.alpha = circle.targetAlpha * remapClosestEdge;
-			}
-			circle.x += circle.dx;
-			circle.y += circle.dy;
-			circle.translateX +=
-				(mouse.current.x / (staticity / circle.magnetism) - circle.translateX) /
-				ease;
-			circle.translateY +=
-				(mouse.current.y / (staticity / circle.magnetism) - circle.translateY) /
-				ease;
-			// circle gets out of the canvas
-			if (
-				circle.x < -circle.size ||
-				circle.x > canvasSize.current.w + circle.size ||
-				circle.y < -circle.size ||
-				circle.y > canvasSize.current.h + circle.size
-			) {
-				// remove the circle from the array
-				circles.current.splice(i, 1);
-				// create a new circle
-				const newCircle = circleParams();
-				drawCircle(newCircle);
-				// update the circle position
-			} else {
-				drawCircle(
-					{
-						...circle,
-						x: circle.x,
-						y: circle.y,
-						translateX: circle.translateX,
-						translateY: circle.translateY,
-						alpha: circle.alpha,
-					},
-					true,
-				);
-			}
-		});
-		window.requestAnimationFrame(animate);
-	};
+	}, [density, maxCount]);
 
 	return (
-		<div className={className} ref={canvasContainerRef} aria-hidden="true">
+		<div className={className} ref={containerRef} aria-hidden="true">
 			<canvas ref={canvasRef} />
 		</div>
 	);
