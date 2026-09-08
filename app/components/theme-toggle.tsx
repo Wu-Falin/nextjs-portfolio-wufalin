@@ -1,25 +1,20 @@
 "use client";
 
-import { Moon, Sun, TerminalSquare } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
-export type Theme = "light" | "dark" | "mono";
+export type Theme = "light" | "dark";
 
 export const THEMES: { value: Theme; label: string; icon: React.ReactNode }[] = [
 	{ value: "light", label: "Light", icon: <Sun className="h-3.5 w-3.5" /> },
 	{ value: "dark", label: "Dark", icon: <Moon className="h-3.5 w-3.5" /> },
-	{
-		value: "mono",
-		label: "Monospace",
-		icon: <TerminalSquare className="h-3.5 w-3.5" />,
-	},
 ];
 
 const STORAGE_KEY = "theme";
 
 function apply(theme: Theme) {
 	const root = document.documentElement;
-	root.classList.remove("theme-light", "theme-dark", "theme-mono");
+	root.classList.remove("theme-light", "theme-dark");
 	root.classList.add(`theme-${theme}`);
 	root.dataset.theme = theme;
 	try {

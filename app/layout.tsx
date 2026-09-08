@@ -52,7 +52,7 @@ const inter = Inter({
  * never flashes the wrong palette. First time visitors follow their system
  * preference for light, and get the dark theme otherwise.
  */
-const themeBootstrap = `(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"&&t!=="mono"){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}document.documentElement.classList.add("theme-"+t);document.documentElement.dataset.theme=t;}catch(e){document.documentElement.classList.add("theme-dark");document.documentElement.dataset.theme="dark";}})();`;
+const themeBootstrap = `(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}document.documentElement.classList.add("theme-"+t);document.documentElement.dataset.theme=t;}catch(e){document.documentElement.classList.add("theme-dark");document.documentElement.dataset.theme="dark";}})();`;
 
 export default function RootLayout({
 	children,
