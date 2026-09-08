@@ -6,7 +6,7 @@ project to the section of the OWASP Web Security Testing Guide it practises.
 
 Built with [Next.js](https://nextjs.org/), [Tailwind CSS](https://tailwindcss.com/)
 and [Contentlayer](https://www.contentlayer.dev/), with an optional
-[Upstash](https://upstash.com) Redis pageview counter.
+[Upstash](https://upstash.com) Redis pageview counter. Deployed on Vercel.
 
 ## Design notes
 
