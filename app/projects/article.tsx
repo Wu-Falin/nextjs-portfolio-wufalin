@@ -15,18 +15,18 @@ type Props = {
 export const Article: React.FC<Props> = ({ project, views, index }) => {
 	return (
 		<li className="group border-b border-line">
-			<Link href={`/projects/${project.slug}`} className="flex items-baseline gap-4 py-7">
+			<Link href={`/projects/${project.slug}`} className="flex items-baseline gap-6 py-10">
 				<span className="font-mono text-[11px] tabular-nums text-faint transition-colors duration-300 group-hover:text-accent">
 					{String(index + 1).padStart(2, "0")}
 				</span>
 
 				<div className="min-w-0 flex-1">
-					<h2 className="text-xl font-bold tracking-tight text-fg transition-colors duration-300 group-hover:text-accent sm:text-2xl">
+					<h2 className="text-xl font-bold tracking-[-0.02em] text-fg transition-colors duration-300 group-hover:text-accent sm:text-2xl">
 						{project.title}
 					</h2>
 
 					{project.tag ? (
-						<p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-faint">
+						<p className="mt-3 font-mono text-[11px] uppercase tracking-[0.16em] text-faint">
 							{project.tag}
 						</p>
 					) : null}

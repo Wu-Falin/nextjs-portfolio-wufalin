@@ -11,7 +11,7 @@ module.exports = {
 	theme: {
 		extend: {
 			// Semantic colours only - each one resolves to a themed custom property,
-			// so the same class works in light, dark and mono.
+			// so the same class works in both light and dark.
 			colors: {
 				bg: "rgb(var(--bg) / <alpha-value>)",
 				soft: "rgb(var(--bg-soft) / <alpha-value>)",
@@ -43,25 +43,12 @@ module.exports = {
 				sans: ["var(--font-body)", ...defaultTheme.fontFamily.sans],
 				mono: ["var(--font-mono)", ...defaultTheme.fontFamily.mono],
 			},
+			// The hero entrance lives in global.css, where it can be staggered with
+			// a custom property and switched off cleanly for reduced motion.
 			animation: {
-				"fade-in": "fade-in 1.2s ease-out forwards",
-				"fade-up": "fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards",
-				sweep: "sweep 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards",
 				halo: "halo 3.5s ease-out infinite",
 			},
 			keyframes: {
-				"fade-in": {
-					"0%": { opacity: "0" },
-					"100%": { opacity: "1" },
-				},
-				"fade-up": {
-					"0%": { opacity: "0", transform: "translateY(0.75rem)" },
-					"100%": { opacity: "1", transform: "translateY(0)" },
-				},
-				sweep: {
-					"0%": { opacity: "0", transform: "scaleX(0)" },
-					"100%": { opacity: "1", transform: "scaleX(1)" },
-				},
 				halo: {
 					"0%": { opacity: "0.6", transform: "scale(0.6)" },
 					"70%, 100%": { opacity: "0", transform: "scale(1.6)" },

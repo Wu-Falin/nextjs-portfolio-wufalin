@@ -81,23 +81,23 @@ export const Header: React.FC<Props> = ({ project, views }) => {
 				</div>
 			</div>
 
-			<div className="mx-auto max-w-3xl px-6 pb-16 pt-32">
+			<div className="mx-auto max-w-3xl px-6 pb-20 pt-40">
 				{project.tag ? (
-					<p className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint">
+					<p className="font-mono text-[11px] uppercase tracking-[0.16em] text-faint">
 						{project.tag}
 					</p>
 				) : null}
 
-				<h1 className="mt-4 text-3xl font-bold tracking-tight text-fg sm:text-5xl">
+				<h1 className="mt-6 text-3xl font-bold tracking-[-0.02em] text-fg sm:text-5xl">
 					{project.title}
 				</h1>
 
-				<p className="mt-6 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">
+				<p className="mt-8 max-w-xl text-[0.9375rem] leading-[1.9] text-muted">
 					{project.description}
 				</p>
 
 				{links.length > 0 ? (
-					<div className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+					<div className="mt-10 flex flex-wrap gap-x-10 gap-y-3">
 						{links.map((link) => (
 							<Link
 								target="_blank"

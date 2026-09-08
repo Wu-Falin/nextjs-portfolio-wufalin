@@ -7,12 +7,12 @@
  * -------
  * Every colour on the site comes from a small set of custom properties held as
  * space separated RGB channels, so Tailwind can apply its own opacity syntax on
- * top of them (`text-fg/60`). Three themes are shipped: light, dark and mono.
- * Mono is the terminal flavoured one - it swaps the body font for a monospace
- * stack, which suits a portfolio built around security tooling.
+ * top of them (`text-fg/60`). Two themes are shipped: light and dark. Both use
+ * the same body font - the monospace stack is kept for code and for the small
+ * tabular numerals in the navigation, never for running text.
  *
- * The active theme is a class on <html> (`theme-light` / `theme-dark` /
- * `theme-mono`), set by a tiny inline script before paint so there is no flash.
+ * The active theme is a class on <html> (`theme-light` / `theme-dark`), set by
+ * a tiny inline script before paint so there is no flash.
  */
 
 @layer base {
@@ -34,8 +34,9 @@
     --fg-faint: 113 113 122;
     --line: 39 39 42;
     --accent: 125 211 252;
-    --field: 255 255 255;
-    --field-opacity: 1;
+    /* Phthalo green, lifted so the pigment still reads against near black. */
+    --field: 74 176 133;
+    --field-opacity: 0.85;
   }
 
   .theme-light {
@@ -47,22 +48,10 @@
     --fg-faint: 113 113 122;
     --line: 228 228 231;
     --accent: 2 132 199;
-    --field: 24 24 27;
+    /* The same hue held at more chroma: laid down thinly over near white, a
+       near black green would only read as grey. */
+    --field: 11 107 79;
     --field-opacity: 0.5;
-  }
-
-  .theme-mono {
-    color-scheme: dark;
-    --font-body: var(--font-mono);
-    --bg: 6 8 7;
-    --bg-soft: 16 20 18;
-    --fg: 214 226 218;
-    --fg-muted: 138 155 145;
-    --fg-faint: 96 112 103;
-    --line: 30 38 33;
-    --accent: 110 231 160;
-    --field: 168 216 188;
-    --field-opacity: 1;
   }
 
   html {
@@ -130,5 +119,59 @@
       rgb(var(--fg) / 0.35),
       rgb(var(--line) / 0)
     );
+  }
+
+  /*
+   * The hero entrance. Every element carries the same easing and differs only
+   * in its --reveal-delay, so the stack arrives in reading order instead of
+   * landing all at once. Rules get their own class because they grow out from
+   * an edge rather than lifting into place.
+   */
+  .reveal {
+    opacity: 0;
+    animation: reveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+
+  .reveal-rule {
+    opacity: 0;
+    transform: scaleX(0);
+    animation: reveal-rule 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+
+  /* The stagger is built from delays, and shortening the duration does not
+     cancel a delay - so drop the animation outright and paint the end state. */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal-rule {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reveal-rule {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleX(1);
   }
 }

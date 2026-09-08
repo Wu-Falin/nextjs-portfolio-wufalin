@@ -15,10 +15,14 @@ interface ParticlesProps {
  *
  * Each particle reads its heading from a slowly evolving 3D value-noise field
  * (x, y, time). Neighbouring particles therefore sample almost the same angle
- * and move together, which reads as a soft monochrome current rather than
+ * and move together, which reads as a soft tinted current rather than
  * random jitter. The technique is the standard "flow field over Perlin/value
  * noise" recipe you find in generative art write-ups; the noise below is a
  * compact value-noise implementation with a fifth order fade curve.
+ *
+ * Colour comes from the theme: --field carries the RGB channels and
+ * --field-opacity scales the whole field, which lets the same pigment sit at a
+ * different weight on a near black background than on a near white one.
  *
  * Budget notes: capped device pixel ratio, capped particle count, a 30fps
  * throttle, no work while the tab is hidden, and a single static frame when the
@@ -127,12 +131,16 @@ export default function Particles({
 		let fieldTime = 0;
 		let frame = 0;
 		let lastFrame = 0;
-		let tint = "255, 255, 255";
+		let tint = "128, 128, 128";
 		let tintOpacity = 1;
 
 		const readTheme = () => {
 			const styles = getComputedStyle(document.documentElement);
-			const channels = styles.getPropertyValue("--field").trim();
+			// Fall back to the foreground colour rather than a fixed one: a missing
+			// --field must not leave the field painting white onto a white page.
+			const channels =
+				styles.getPropertyValue("--field").trim() ||
+				styles.getPropertyValue("--fg").trim();
 			if (channels) {
 				tint = channels.split(/[\s,]+/).join(", ");
 			}
@@ -147,8 +155,10 @@ export default function Particles({
 			y: Math.random() * height,
 			vx: 0,
 			vy: 0,
-			radius: Math.random() * 1.1 + 0.35,
-			alpha: Math.random() * 0.35 + 0.08,
+			radius: Math.random() * 1.05 + 0.65,
+			// Kept clear of zero so no particle is drawn too faint to see; the
+			// per theme --field-opacity is what dials the field back down.
+			alpha: Math.random() * 0.42 + 0.28,
 			// Stagger the initial ages so the first fade-in is not synchronised.
 			age: fresh ? Math.random() * 240 : 0,
 			ttl: 420 + Math.random() * 480,

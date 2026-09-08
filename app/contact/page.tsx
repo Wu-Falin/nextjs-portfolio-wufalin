@@ -27,21 +27,21 @@ export default function ContactPage() {
 		<div className="relative min-h-screen">
 			<Navigation />
 
-			<main className="mx-auto max-w-3xl px-6 pb-24 pt-28 lg:pt-32">
+			<main className="mx-auto max-w-3xl px-6 pb-32 pt-36 lg:pt-44">
 				<header>
-					<p className="font-mono text-[11px] uppercase tracking-[0.35em] text-faint">
+					<p className="font-mono text-[10px] uppercase tracking-[0.45em] text-faint">
 						03 / contact
 					</p>
-					<h1 className="mt-4 text-3xl font-semibold tracking-tight text-fg sm:text-4xl">
+					<h1 className="mt-8 text-3xl font-medium tracking-[-0.02em] text-fg sm:text-4xl">
 						Get in touch
 					</h1>
-					<p className="mt-4 max-w-xl text-sm leading-relaxed text-muted">
+					<p className="mt-6 max-w-md text-[0.9375rem] leading-[1.9] text-muted">
 						Open to junior penetration testing roles, internships, and anything
 						else where I can keep learning offensive security in practice.
 					</p>
 				</header>
 
-				<div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2">
+				<div className="mt-20 grid grid-cols-1 gap-6 sm:grid-cols-2">
 					{socials.map((social) => (
 						<Card key={social.label}>
 							<Link

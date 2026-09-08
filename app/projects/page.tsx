@@ -27,22 +27,22 @@ export default async function ProjectsPage() {
 		<div className="relative min-h-screen">
 			<Navigation />
 
-			<main className="mx-auto max-w-3xl px-6 pb-24 pt-28 lg:pt-32">
+			<main className="mx-auto max-w-3xl px-6 pb-32 pt-36 lg:pt-44">
 				<header>
-					<p className="font-mono text-[11px] uppercase tracking-[0.35em] text-faint">
+					<p className="font-mono text-[10px] uppercase tracking-[0.45em] text-faint">
 						02 / work
 					</p>
-					<h1 className="mt-4 text-3xl font-semibold tracking-tight text-fg sm:text-4xl">
+					<h1 className="mt-8 text-3xl font-medium tracking-[-0.02em] text-fg sm:text-4xl">
 						Projects
 					</h1>
-					<p className="mt-4 max-w-xl text-sm leading-relaxed text-muted">
+					<p className="mt-6 max-w-md text-[0.9375rem] leading-[1.9] text-muted">
 						Tools I build to work through web application testing methodology
 						hands on. Each one maps to a section of the OWASP Web Security
 						Testing Guide.
 					</p>
 				</header>
 
-				<ol className="mt-14 border-t border-line">
+				<ol className="mt-20 border-t border-line">
 					{projects.map((project, index) => (
 						<Article
 							key={project.slug}

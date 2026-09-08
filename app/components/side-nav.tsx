@@ -17,9 +17,9 @@ export const SideNav: React.FC = () => {
 	return (
 		<nav
 			aria-label="Sections"
-			className="fixed left-8 top-1/2 z-40 hidden -translate-y-1/2 lg:block"
+			className="fixed left-10 top-1/2 z-40 hidden -translate-y-1/2 lg:block xl:left-16"
 		>
-			<ol className="flex flex-col gap-6">
+			<ol className="flex flex-col gap-9">
 				{sections.map((section, index) => {
 					const active = current === section.href;
 					return (
@@ -27,7 +27,7 @@ export const SideNav: React.FC = () => {
 							<Link
 								href={section.href}
 								aria-current={active ? "page" : undefined}
-								className="group flex items-center gap-3"
+								className="group flex items-center gap-4"
 							>
 								<span
 									className={`w-5 font-mono text-[10px] tabular-nums transition-colors duration-300 ${
