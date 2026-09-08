@@ -2,9 +2,133 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  .text-edge-outline {
-    -webkit-text-stroke: 1px rgba(255,255,255,0.3);
-  }
-} 
+/*
+ * Theming
+ * -------
+ * Every colour on the site comes from a small set of custom properties held as
+ * space separated RGB channels, so Tailwind can apply its own opacity syntax on
+ * top of them (`text-fg/60`). Three themes are shipped: light, dark and mono.
+ * Mono is the terminal flavoured one - it swaps the body font for a monospace
+ * stack, which suits a portfolio built around security tooling.
+ *
+ * The active theme is a class on <html> (`theme-light` / `theme-dark` /
+ * `theme-mono`), set by a tiny inline script before paint so there is no flash.
+ */
 
+@layer base {
+  :root {
+    --font-body: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+      "Segoe UI", Roboto, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+      "Liberation Mono", monospace;
+  }
+
+  /* Dark is the default, so an unresolved theme still looks intentional. */
+  :root,
+  .theme-dark {
+    color-scheme: dark;
+    --bg: 9 9 11;
+    --bg-soft: 24 24 27;
+    --fg: 244 244 245;
+    --fg-muted: 161 161 170;
+    --fg-faint: 113 113 122;
+    --line: 39 39 42;
+    --accent: 125 211 252;
+    --field: 255 255 255;
+    --field-opacity: 1;
+  }
+
+  .theme-light {
+    color-scheme: light;
+    --bg: 250 250 249;
+    --bg-soft: 255 255 255;
+    --fg: 24 24 27;
+    --fg-muted: 82 82 91;
+    --fg-faint: 113 113 122;
+    --line: 228 228 231;
+    --accent: 2 132 199;
+    --field: 24 24 27;
+    --field-opacity: 0.5;
+  }
+
+  .theme-mono {
+    color-scheme: dark;
+    --font-body: var(--font-mono);
+    --bg: 6 8 7;
+    --bg-soft: 16 20 18;
+    --fg: 214 226 218;
+    --fg-muted: 138 155 145;
+    --fg-faint: 96 112 103;
+    --line: 30 38 33;
+    --accent: 110 231 160;
+    --field: 168 216 188;
+    --field-opacity: 1;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: rgb(var(--bg));
+    color: rgb(var(--fg));
+  }
+
+  ::selection {
+    background-color: rgb(var(--accent) / 0.25);
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent) / 0.8);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Long form MDX articles, wired to the theme tokens rather than a fixed palette. */
+  .prose-theme {
+    --tw-prose-body: rgb(var(--fg-muted));
+    --tw-prose-headings: rgb(var(--fg));
+    --tw-prose-lead: rgb(var(--fg-muted));
+    --tw-prose-links: rgb(var(--accent));
+    --tw-prose-bold: rgb(var(--fg));
+    --tw-prose-counters: rgb(var(--fg-faint));
+    --tw-prose-bullets: rgb(var(--fg-faint));
+    --tw-prose-hr: rgb(var(--line));
+    --tw-prose-quotes: rgb(var(--fg));
+    --tw-prose-quote-borders: rgb(var(--line));
+    --tw-prose-captions: rgb(var(--fg-faint));
+    --tw-prose-code: rgb(var(--fg));
+    /* rehype-pretty-code emits a dark syntax theme, so the code block keeps
+       a dark surface in every theme rather than inverting to unreadable. */
+    --tw-prose-pre-code: rgb(228 228 231);
+    --tw-prose-pre-bg: rgb(24 24 27);
+    --tw-prose-th-borders: rgb(var(--line));
+    --tw-prose-td-borders: rgb(var(--line));
+  }
+
+  /* A hairline that fades out at both ends - used to frame the home page. */
+  .rule-fade {
+    background-image: linear-gradient(
+      to right,
+      rgb(var(--line) / 0),
+      rgb(var(--fg) / 0.35),
+      rgb(var(--line) / 0)
+    );
+  }
+}

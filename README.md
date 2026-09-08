@@ -1,33 +1,58 @@
-<div align="center">
-    <a href="https://chronark.com"><h1 align="center">chronark.com</h1></a>
+# Portfolio — Falindo
 
-My personal website, built with [Next.js](https://nextjs.org/), [Tailwind CSS](https://tailwindcss.com/), [Upstash](https://upstash.com?ref=chronark.com), [Contentlayer](https://www.contentlayer.dev/) and deployed to [Vercel](https://vercel.com/).
+Personal site of an Information Systems student working toward a junior
+penetration tester role. It lists the security tooling I build and maps each
+project to the section of the OWASP Web Security Testing Guide it practises.
 
-</div>
+Built with [Next.js](https://nextjs.org/), [Tailwind CSS](https://tailwindcss.com/)
+and [Contentlayer](https://www.contentlayer.dev/), with an optional
+[Upstash](https://upstash.com) Redis pageview counter.
 
-<br/>
+## Design notes
 
+- **Three themes** — light, dark and monospace. The monospace theme swaps the
+  body font for a monospace stack, which suits a portfolio built around security
+  tooling. The choice persists in `localStorage` and is applied before first
+  paint so the page never flashes the wrong palette.
+- **Numbered side rail** — a slim vertical nav on wide screens marking the
+  current section; a top bar takes over on narrow ones.
+- **Ambient background** — a canvas flow field where each particle takes its
+  heading from slowly evolving 3D value noise. Capped particle count and device
+  pixel ratio, throttled to 30fps, paused while the tab is hidden, and reduced to
+  a single static frame under `prefers-reduced-motion`.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/upstash/clone?demo-title=Next.js%20Portfolio%20with%20Pageview%20Counter&demo-description=Portfolio%20site%20with%20pageview%20counter%2C%20built%20with%20Next.js%2013%20App%20Router%2C%20Contentlayer%2C%20and%20Upstash%20Redis.&demo-url=https%3A%2F%2Fchronark.com%2F&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F1DA8n5a6WaP9p1FXf9LmUY%2Fc6264fa2732355787bf657df92dda8a1%2FCleanShot_2023-04-17_at_14.17.37.png&project-name=Next.js%20Portfolio%20with%20Pageview%20Counter&repository-name=nextjs-portfolio-pageview-counter&repository-url=https%3A%2F%2Fgithub.com%2Fchronark%2Fchronark.com&from=templates&integration-ids=oac_V3R1GIpkoJorr6fqyiwdhl17)
-
-## Running Locally
-
+## Running locally
 
 ```sh-session
-git clone https://github.com/chronark/chronark.com.git
-cd chronark.com
-```
-
-
-Create a `.env` file similar to [`.env.example`](https://github.com/chronark/chronark.com/blob/main/.env.example).
-
-Then install dependencies and run the development server:
-```sh-session
+git clone https://github.com/Wu-Falin/nextjs-portfolio-wufalin.git
+cd nextjs-portfolio-wufalin
 pnpm install
 pnpm dev
 ```
 
+The pageview counter is optional. To enable it, copy [`.env.example`](./.env.example)
+to `.env` and fill in your Upstash credentials — without them the counter simply
+stays at zero and everything else works as normal.
 
-## Cloning / Forking
+## Adding a project
 
-Please remove all of my personal information (projects, images, etc.) before deploying your own version of this site.
+Drop an `.mdx` file into `content/projects/`:
+
+```yaml
+---
+title: Project name
+description: One or two sentences.
+date: "2026-01-01"
+published: true
+repository: Wu-Falin/repo-name
+tag: WSTG-XXXX-00
+---
+```
+
+`tag` is the short label shown under the title in the project list, and `url`
+is available for projects with a live site. `date` is only used to order the
+list - it is never displayed.
+
+## License
+
+MIT — see [LICENSE](./LICENSE).

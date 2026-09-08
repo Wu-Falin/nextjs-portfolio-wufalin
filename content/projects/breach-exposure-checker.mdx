@@ -1,0 +1,82 @@
+---
+title: Personal Breach-Exposure Checker
+description: A browser-only password breach checker built on k-anonymity. The full password, and even its full hash, never leaves the page - only a five character hash prefix is ever sent.
+date: "2025-11-12"
+published: true
+repository: Wu-Falin/breach-exposure-checker
+tag: WSTG-ATHN-07
+---
+
+A single page tool that answers one question - "has this password shown up in a
+known breach corpus?" - without ever handing the password to anyone, including
+me. There is no backend, no database and no logging, because there is nothing to
+log.
+
+## How the k-anonymity lookup works
+
+The Pwned Passwords range API is designed so a client can ask about a password
+without revealing it:
+
+1. Hash the password with SHA-1 in the browser, using the Web Crypto API.
+2. Split the hex digest into a **5 character prefix** and a **35 character suffix**.
+3. Send only the prefix to the range endpoint.
+4. The service returns every suffix it holds under that prefix - several hundred
+   of them - along with a breach count for each.
+5. Compare the suffixes locally. A match means the password appears in the
+   corpus; no match means it does not.
+
+The server sees a prefix shared by hundreds of unrelated hashes, so it cannot
+tell which password was being checked. That is the whole point of the scheme:
+the anonymity set is the bucket.
+
+```ts
+async function sha1Hex(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest(
+    "SHA-1",
+    new TextEncoder().encode(value),
+  );
+
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("")
+    .toUpperCase();
+}
+
+export async function breachCount(password: string): Promise<number> {
+  const hash = await sha1Hex(password);
+  const prefix = hash.slice(0, 5);
+  const suffix = hash.slice(5);
+
+  // Only the prefix crosses the network.
+  const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`);
+  const body = await res.text();
+
+  for (const line of body.split("\n")) {
+    const [candidate, count] = line.trim().split(":");
+    if (candidate === suffix) {
+      return Number.parseInt(count, 10);
+    }
+  }
+
+  return 0;
+}
+```
+
+## Handling decisions
+
+- **No persistence.** The input is never written to storage, never put in the
+  URL, and the field is cleared on submit.
+- **No third party scripts.** Nothing else runs on the page, so nothing else can
+  read the input.
+- **SHA-1 on purpose.** The corpus is keyed on SHA-1. It is not being used as a
+  password hash here, only as a lookup key, so its collision weakness does not
+  apply to this use.
+- **Honest result copy.** "Not found" means not found in this corpus. It does
+  not mean the password is strong, and the UI says so.
+
+## Where it maps
+
+This sits on **WSTG-ATHN-07, Testing for Weak Password Policy**. Building the
+checker was a way to work through what a credential actually exposes when it
+reaches a server, and how much of that exposure disappears when you move the
+comparison to the client.

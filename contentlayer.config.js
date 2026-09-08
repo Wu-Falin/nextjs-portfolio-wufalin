@@ -42,6 +42,11 @@ export const Project = defineDocumentType(() => ({
 		repository: {
 			type: "string",
 		},
+		// Short label shown next to the date in the project list, e.g. the OWASP
+		// WSTG section the project maps to.
+		tag: {
+			type: "string",
+		},
 	},
 	computedFields,
 }));

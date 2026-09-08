@@ -1,13 +1,17 @@
 "use client";
+
 import {
 	motion,
 	useMotionTemplate,
 	useMotionValue,
 	useSpring,
 } from "framer-motion";
+import { PropsWithChildren } from "react";
 
-import { MouseEventHandler, PropsWithChildren } from "react";
-
+/**
+ * A bordered panel with a soft highlight that tracks the pointer. The highlight
+ * is drawn from theme tokens, so it stays subtle in every theme.
+ */
 export const Card: React.FC<PropsWithChildren> = ({ children }) => {
 	const mouseX = useSpring(0, { stiffness: 500, damping: 100 });
 	const mouseY = useSpring(0, { stiffness: 500, damping: 100 });
@@ -17,22 +21,18 @@ export const Card: React.FC<PropsWithChildren> = ({ children }) => {
 		mouseX.set(clientX - left);
 		mouseY.set(clientY - top);
 	}
-	const maskImage = useMotionTemplate`radial-gradient(240px at ${mouseX}px ${mouseY}px, white, transparent)`;
+
+	const maskImage = useMotionTemplate`radial-gradient(220px at ${mouseX}px ${mouseY}px, white, transparent)`;
 	const style = { maskImage, WebkitMaskImage: maskImage };
 
 	return (
 		<div
 			onMouseMove={onMouseMove}
-			className="overflow-hidden relative duration-700 border rounded-xl hover:bg-zinc-800/10 group md:gap-8 hover:border-zinc-400/50 border-zinc-600 "
+			className="group relative overflow-hidden rounded-lg border border-line duration-500 hover:border-muted/50"
 		>
 			<div className="pointer-events-none">
-				<div className="absolute inset-0 z-0  transition duration-1000 [mask-image:linear-gradient(black,transparent)]" />
 				<motion.div
-					className="absolute inset-0 z-10  bg-gradient-to-br opacity-100  via-zinc-100/10  transition duration-1000 group-hover:opacity-50 "
-					style={style}
-				/>
-				<motion.div
-					className="absolute inset-0 z-10 opacity-0 mix-blend-overlay transition duration-1000 group-hover:opacity-100"
+					className="absolute inset-0 z-0 bg-fg/[0.04] opacity-0 transition duration-500 group-hover:opacity-100"
 					style={style}
 				/>
 			</div>
