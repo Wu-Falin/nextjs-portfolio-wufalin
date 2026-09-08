@@ -37,6 +37,8 @@ const FIELD_SCALE = 0.0016;
 /** How fast the field itself morphs, per throttled frame. */
 const FIELD_DRIFT = 0.0022;
 const MAX_DPR = 1.5;
+/** How far the field moves towards a new theme's colour per drawn frame. */
+const TINT_EASE = 0.18;
 
 // --- value noise ----------------------------------------------------------
 
@@ -131,8 +133,13 @@ export default function Particles({
 		let fieldTime = 0;
 		let frame = 0;
 		let lastFrame = 0;
-		let tint = "128, 128, 128";
+		// Held as numbers rather than a colour string so a theme change can be
+		// crossed to over a few frames, matching the fade the rest of the page
+		// does, instead of the field snapping to the new colour on its own.
+		const tint = [128, 128, 128];
+		const target = [128, 128, 128];
 		let tintOpacity = 1;
+		let targetOpacity = 1;
 
 		const readTheme = () => {
 			const styles = getComputedStyle(document.documentElement);
@@ -141,13 +148,24 @@ export default function Particles({
 			const channels =
 				styles.getPropertyValue("--field").trim() ||
 				styles.getPropertyValue("--fg").trim();
-			if (channels) {
-				tint = channels.split(/[\s,]+/).join(", ");
+			const parsed = channels.split(/[\s,]+/).map(Number);
+			if (parsed.length === 3 && parsed.every(Number.isFinite)) {
+				target[0] = parsed[0];
+				target[1] = parsed[1];
+				target[2] = parsed[2];
 			}
 			const opacity = Number.parseFloat(
 				styles.getPropertyValue("--field-opacity"),
 			);
-			tintOpacity = Number.isFinite(opacity) ? opacity : 1;
+			targetOpacity = Number.isFinite(opacity) ? opacity : 1;
+		};
+
+		/** Take the new colour immediately, with no cross fade. */
+		const snapTint = () => {
+			tint[0] = target[0];
+			tint[1] = target[1];
+			tint[2] = target[2];
+			tintOpacity = targetOpacity;
 		};
 
 		const spawn = (fresh: boolean): Particle => ({
@@ -188,6 +206,11 @@ export default function Particles({
 		const step = () => {
 			fieldTime += FIELD_DRIFT;
 
+			tint[0] += (target[0] - tint[0]) * TINT_EASE;
+			tint[1] += (target[1] - tint[1]) * TINT_EASE;
+			tint[2] += (target[2] - tint[2]) * TINT_EASE;
+			tintOpacity += (targetOpacity - tintOpacity) * TINT_EASE;
+
 			for (let i = 0; i < particles.length; i++) {
 				const p = particles[i];
 				// Two turns of the field give the current a little more character
@@ -212,7 +235,9 @@ export default function Particles({
 
 		const draw = () => {
 			ctx.clearRect(0, 0, width, height);
-			ctx.fillStyle = `rgb(${tint})`;
+			ctx.fillStyle = `rgb(${Math.round(tint[0])}, ${Math.round(
+				tint[1],
+			)}, ${Math.round(tint[2])})`;
 
 			for (const p of particles) {
 				// Fade in over the first ~2s and back out over the last ~2s of life.
@@ -271,7 +296,12 @@ export default function Particles({
 		// The tint lives in a CSS custom property, so follow theme changes.
 		const themeObserver = new MutationObserver(() => {
 			readTheme();
-			if (reduceMotion.matches) draw();
+			// A still field has no frames to cross over, so it takes the new
+			// colour at once and repaints.
+			if (reduceMotion.matches) {
+				snapTint();
+				draw();
+			}
 		});
 		themeObserver.observe(document.documentElement, {
 			attributes: true,
@@ -279,6 +309,7 @@ export default function Particles({
 		});
 
 		readTheme();
+		snapTint();
 		resize();
 		start();
 

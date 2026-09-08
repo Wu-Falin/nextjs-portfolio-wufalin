@@ -12,8 +12,25 @@ export const THEMES: { value: Theme; label: string }[] = [
 
 const STORAGE_KEY = "theme";
 
+/** Matches the fade length in global.css, with a little slack on the end. */
+const SWITCH_MS = 480;
+
+let switchTimer: number | undefined;
+
 function apply(theme: Theme) {
 	const root = document.documentElement;
+
+	// Arm the cross fade first and flush it, so the browser has the transition
+	// in hand before the palette changes underneath it rather than in the same
+	// style pass. Taken off again once the fade is done, so it never slows the
+	// ordinary hover transitions.
+	root.classList.add("theme-switching");
+	root.getBoundingClientRect();
+	window.clearTimeout(switchTimer);
+	switchTimer = window.setTimeout(() => {
+		root.classList.remove("theme-switching");
+	}, SWITCH_MS);
+
 	root.classList.remove("theme-light", "theme-dark");
 	root.classList.add(`theme-${theme}`);
 	root.dataset.theme = theme;

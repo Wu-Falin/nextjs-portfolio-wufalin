@@ -15,7 +15,7 @@ const delay = (ms: number) =>
 export const Intro: React.FC = () => (
 	<div
 		aria-hidden="true"
-		className="intro pointer-events-none fixed inset-0 z-50 items-center bg-bg px-10 sm:px-20 lg:px-28"
+		className="intro pointer-events-none fixed inset-0 z-50 items-center justify-center bg-bg px-10 text-center"
 	>
 		<p className="text-2xl tracking-[0.01em] sm:text-3xl">
 			<span
