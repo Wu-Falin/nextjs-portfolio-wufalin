@@ -33,7 +33,7 @@
     --fg-muted: 161 161 170;
     --fg-faint: 113 113 122;
     --line: 39 39 42;
-    --accent: 125 211 252;
+    --accent: 99 210 164;
     /* Phthalo green, lifted so the pigment still reads against near black. */
     --field: 74 176 133;
     --field-opacity: 0.85;
@@ -47,7 +47,7 @@
     --fg-muted: 82 82 91;
     --fg-faint: 113 113 122;
     --line: 228 228 231;
-    --accent: 2 132 199;
+    --accent: 10 107 79;
     /* The same hue held at more chroma: laid down thinly over near white, a
        near black green would only read as grey. */
     --field: 11 107 79;
@@ -111,21 +111,10 @@
     --tw-prose-td-borders: rgb(var(--line));
   }
 
-  /* A hairline that fades out at both ends - used to frame the home page. */
-  .rule-fade {
-    background-image: linear-gradient(
-      to right,
-      rgb(var(--line) / 0),
-      rgb(var(--fg) / 0.35),
-      rgb(var(--line) / 0)
-    );
-  }
-
   /*
-   * The hero entrance. Every element carries the same easing and differs only
-   * in its --reveal-delay, so the stack arrives in reading order instead of
-   * landing all at once. Rules get their own class because they grow out from
-   * an edge rather than lifting into place.
+   * The entrance. Every element carries the same easing and differs only in
+   * its --reveal-delay, so the page arrives in reading order instead of
+   * landing all at once.
    */
   .reveal {
     opacity: 0;
@@ -133,18 +122,10 @@
     animation-delay: var(--reveal-delay, 0ms);
   }
 
-  .reveal-rule {
-    opacity: 0;
-    transform: scaleX(0);
-    animation: reveal-rule 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: var(--reveal-delay, 0ms);
-  }
-
   /* The stagger is built from delays, and shortening the duration does not
      cancel a delay - so drop the animation outright and paint the end state. */
   @media (prefers-reduced-motion: reduce) {
-    .reveal,
-    .reveal-rule {
+    .reveal {
       animation: none;
       opacity: 1;
       transform: none;
@@ -161,17 +142,5 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes reveal-rule {
-  from {
-    opacity: 0;
-    transform: scaleX(0);
-  }
-
-  to {
-    opacity: 1;
-    transform: scaleX(1);
   }
 }

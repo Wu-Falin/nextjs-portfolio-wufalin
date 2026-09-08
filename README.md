@@ -12,15 +12,16 @@ and [Contentlayer](https://www.contentlayer.dev/), with an optional
 
 - **Two themes** — light and dark. The choice persists in `localStorage` and is
   applied before first paint so the page never flashes the wrong palette.
-- **Numbered side rail** — a slim vertical nav on wide screens marking the
-  current section; a top bar takes over on narrow ones.
+- **Numbered rail** — the same list of sections everywhere: the home page lays
+  it out inline in its left column, other pages pin it to the left edge on wide
+  screens, and a top bar takes over on narrow ones.
 - **Ambient background** — a canvas flow field where each particle takes its
   heading from slowly evolving 3D value noise, tinted phthalo green. The tint
   and its weight are theme tokens (`--field` / `--field-opacity`), so the same
   pigment stays subtle on near black and on near white. Capped particle count
   and device pixel ratio, throttled to 30fps, paused while the tab is hidden,
   and reduced to a single static frame under `prefers-reduced-motion`.
-- **Quiet entrance** — the hero stack fades in on a stagger, driven by a
+- **Quiet entrance** — the home page fades in on a stagger, driven by a
   `--reveal-delay` custom property and switched off entirely for visitors who
   ask for reduced motion.
 
