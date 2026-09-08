@@ -15,13 +15,19 @@ and [Contentlayer](https://www.contentlayer.dev/), with an optional
 - **Numbered rail** — the same list of sections everywhere: the home page lays
   it out inline in its left column, other pages pin it to the left edge on wide
   screens, and a top bar takes over on narrow ones.
-- **Ambient background** — a looping plume of particles, tinted phthalo green.
-  Two clips are shipped, one per theme, each with its colour and its theme's
-  background baked in, so switching themes is an opacity cross fade rather than
-  a blend mode that cannot animate. The loop is cut with the tail cross faded
-  back over the head, so it repeats without a seam. Paused while the tab is
-  hidden, and under `prefers-reduced-motion` the still frame is served on its
-  own and the clips are never downloaded.
+- **Ambient background** — a looping plume of particles at native 720p, tinted
+  phthalo green. Two clips are shipped, one per theme, each with its colour and
+  its theme's background baked in, so switching themes is an opacity cross fade
+  rather than a blend mode that cannot animate. Only the theme on screen is
+  downloaded; the other waits on its poster until the first time you switch to
+  it. The loop is cut with the tail cross faded back over the head, so it
+  repeats without a seam. Paused while the tab is hidden, and under
+  `prefers-reduced-motion` the still frame is served on its own and no clip is
+  downloaded at all.
+- **Words over the field** — a scrim weighted to the left column and the bottom
+  right corner, plus a halo in the page colour behind the text, so the plume
+  can run at full strength and every block still clears 5.8:1 against the
+  ground behind it.
 - **Quiet entrance** — an opening title on each full load, then the page fades
   in on a stagger, driven by a `--reveal-delay` custom property and switched
   off entirely for visitors who ask for reduced motion. Moving between sections

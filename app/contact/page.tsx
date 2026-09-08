@@ -1,6 +1,6 @@
 "use client";
 
-import { Github, Linkedin, Mail } from "lucide-react";
+import { Github, Linkedin, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { Card } from "../components/card";
 import { Navigation } from "../components/nav";
@@ -25,6 +25,14 @@ const socials = [
 		href: "https://www.linkedin.com/in/ng-falin-493363260",
 		label: "LinkedIn",
 		handle: "ng-falin",
+	},
+	{
+		icon: <Phone size={18} />,
+		// tel: wants the number in international form with nothing between the
+		// digits; the label keeps the spacing a person would read.
+		href: "tel:+6285210812017",
+		label: "Phone",
+		handle: "(+62) 0852 1081 2017",
 	},
 ];
 

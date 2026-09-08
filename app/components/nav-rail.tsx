@@ -44,7 +44,7 @@ export const NavRail: React.FC<Props> = ({ stagger }) => {
 							className="group flex items-center gap-4 transition-transform duration-500 ease-out hover:translate-x-1.5"
 						>
 							<span
-								className={`w-5 text-[10px] tabular-nums transition-colors duration-500 ${
+								className={`on-field w-5 text-[10px] tabular-nums transition-colors duration-500 ${
 									active ? "text-accent" : "text-faint group-hover:text-fg"
 								}`}
 							>
@@ -81,7 +81,7 @@ export const NavRail: React.FC<Props> = ({ stagger }) => {
 							/>
 
 							<span
-								className={`text-[11px] uppercase tracking-[0.2em] transition-colors duration-500 ${
+								className={`on-field text-[11px] uppercase tracking-[0.2em] transition-colors duration-500 ${
 									active ? "text-fg" : "text-faint group-hover:text-muted"
 								}`}
 							>

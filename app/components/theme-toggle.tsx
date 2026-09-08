@@ -85,7 +85,7 @@ export const ThemeToggle: React.FC = () => {
 							}`}
 						/>
 						<span
-							className={`text-[10px] uppercase tracking-[0.25em] transition-colors duration-300 sm:rotate-180 sm:[writing-mode:vertical-rl] ${
+							className={`on-field text-[10px] uppercase tracking-[0.25em] transition-colors duration-300 sm:rotate-180 sm:[writing-mode:vertical-rl] ${
 								active ? "text-fg" : "text-faint group-hover:text-muted"
 							}`}
 						>

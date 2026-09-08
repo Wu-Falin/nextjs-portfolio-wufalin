@@ -43,21 +43,21 @@ export default function Home() {
 			<div>
 				<p
 					style={delay(80)}
-					className="reveal text-[10px] uppercase tracking-[0.45em] text-faint"
+					className="reveal on-field text-[10px] uppercase tracking-[0.45em] text-faint"
 				>
 					Information Systems
 				</p>
 
 				<h1
 					style={delay(200)}
-					className="reveal mt-8 pb-[0.16em] text-[clamp(3.75rem,14vw,11rem)] font-light leading-[1.02] tracking-[0.015em] text-fg"
+					className="reveal on-field mt-8 pb-[0.16em] text-[clamp(3.75rem,14vw,11rem)] font-light leading-[1.02] tracking-[0.015em] text-fg"
 				>
 					Ng Falin
 				</h1>
 
 				<p
 					style={delay(340)}
-					className="reveal mt-6 text-[0.8125rem] leading-relaxed tracking-[0.06em] text-muted"
+					className="reveal on-field mt-6 text-[0.8125rem] leading-relaxed tracking-[0.06em] text-muted"
 				>
 					Student &amp; aspiring penetration tester
 				</p>
@@ -75,12 +75,12 @@ export default function Home() {
 							href={link.href}
 							target="_blank"
 							rel="noreferrer"
-							className="block text-[10px] uppercase tracking-[0.28em] text-faint duration-300 hover:text-fg"
+							className="on-field block text-[10px] uppercase tracking-[0.28em] text-faint duration-300 hover:text-fg"
 						>
 							{link.name} <span aria-hidden="true">&rarr;</span>
 						</Link>
 					))}
-					<p className="text-[10px] uppercase tracking-[0.28em] text-faint">
+					<p className="on-field text-[10px] uppercase tracking-[0.28em] text-faint">
 						&copy; Ng Falin
 					</p>
 				</div>
@@ -89,7 +89,7 @@ export default function Home() {
 					{statement.map((line) => (
 						<p
 							key={line}
-							className="text-[0.8125rem] leading-relaxed text-muted"
+							className="on-field text-[0.8125rem] leading-relaxed text-muted"
 						>
 							{line}
 						</p>
