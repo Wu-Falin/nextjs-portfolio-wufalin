@@ -14,16 +14,16 @@ export const metadata: Metadata = {
 		process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
 	),
 	title: {
-		default: "Falindo",
-		template: "%s | Falindo",
+		default: "Wu Falin",
+		template: "%s | Wu Falin",
 	},
 	description:
 		"Information Systems student building security tooling on the way to a junior penetration tester role.",
 	openGraph: {
-		title: "Falindo",
+		title: "Wu Falin",
 		description:
 			"Information Systems student building security tooling on the way to a junior penetration tester role.",
-		siteName: "Falindo",
+		siteName: "Wu Falin",
 		locale: "en-US",
 		type: "website",
 	},

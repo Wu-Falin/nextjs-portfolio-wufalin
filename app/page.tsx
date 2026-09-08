@@ -41,7 +41,7 @@ export default function Home() {
 					style={delay(200)}
 					className="reveal mt-8 text-[clamp(3.75rem,14vw,11rem)] font-light leading-[0.88] tracking-[0.015em] text-fg"
 				>
-					Falindo
+					Wu Falin
 				</h1>
 
 				<p
