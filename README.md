@@ -1,4 +1,4 @@
-# Portfolio — Falindo
+# Portfolio — Wu Falin
 
 Personal site of an Information Systems student working toward a junior
 penetration tester role. It lists the security tooling I build and maps each
