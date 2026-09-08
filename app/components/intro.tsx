@@ -22,7 +22,7 @@ export const Intro: React.FC = () => (
 				style={delay(200)}
 				className="intro-word inline-block font-semibold text-fg"
 			>
-				Wu Falin
+				Ng Falin
 			</span>
 			<span
 				style={delay(700)}

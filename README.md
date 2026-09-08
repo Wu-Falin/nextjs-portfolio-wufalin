@@ -1,4 +1,4 @@
-# Portfolio — Wu Falin
+# Portfolio — Ng Falin
 
 Personal site of an Information Systems student working toward a junior
 penetration tester role. It lists the security tooling I build and maps each
@@ -15,15 +15,17 @@ and [Contentlayer](https://www.contentlayer.dev/), with an optional
 - **Numbered rail** — the same list of sections everywhere: the home page lays
   it out inline in its left column, other pages pin it to the left edge on wide
   screens, and a top bar takes over on narrow ones.
-- **Ambient background** — a canvas flow field where each particle takes its
-  heading from slowly evolving 3D value noise, tinted phthalo green. The tint
-  and its weight are theme tokens (`--field` / `--field-opacity`), so the same
-  pigment stays subtle on near black and on near white. Capped particle count
-  and device pixel ratio, throttled to 30fps, paused while the tab is hidden,
-  and reduced to a single static frame under `prefers-reduced-motion`.
-- **Quiet entrance** — the home page fades in on a stagger, driven by a
-  `--reveal-delay` custom property and switched off entirely for visitors who
-  ask for reduced motion.
+- **Ambient background** — a looping plume of particles, tinted phthalo green.
+  Two clips are shipped, one per theme, each with its colour and its theme's
+  background baked in, so switching themes is an opacity cross fade rather than
+  a blend mode that cannot animate. The loop is cut with the tail cross faded
+  back over the head, so it repeats without a seam. Paused while the tab is
+  hidden, and under `prefers-reduced-motion` the still frame is served on its
+  own and the clips are never downloaded.
+- **Quiet entrance** — an opening title on each full load, then the page fades
+  in on a stagger, driven by a `--reveal-delay` custom property and switched
+  off entirely for visitors who ask for reduced motion. Moving between sections
+  draws a hairline across the top and replays the section's own entrance.
 
 ## Running locally
 

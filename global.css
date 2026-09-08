@@ -8,8 +8,11 @@
  * Every colour on the site comes from a small set of custom properties held as
  * space separated RGB channels, so Tailwind can apply its own opacity syntax on
  * top of them (`text-fg/60`). Two themes are shipped: light and dark. Both use
- * the same body font - the monospace stack is kept for code and for the small
- * tabular numerals in the navigation, never for running text.
+ * one geometric sans throughout, with the monospace stack kept for code and
+ * nothing else.
+ *
+ * The background clips are the exception: their colour is baked in, so the
+ * theme only sets how strongly each of the two shows.
  *
  * The active theme is a class on <html> (`theme-light` / `theme-dark`), set by
  * a tiny inline script before paint so there is no flash.
@@ -17,8 +20,10 @@
 
 @layer base {
   :root {
-    --font-body: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
-      "Segoe UI", Roboto, sans-serif;
+    /* Geometric throughout, with geometric fallbacks rather than a grotesque,
+       so the shapes hold if the webfont never arrives. */
+    --font-body: var(--font-sans), "Century Gothic", "Avenir Next", Avenir,
+      ui-sans-serif, system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
       "Liberation Mono", monospace;
   }
@@ -34,9 +39,10 @@
     --fg-faint: 113 113 122;
     --line: 39 39 42;
     --accent: 99 210 164;
-    /* Phthalo green, lifted so the pigment still reads against near black. */
-    --field: 74 176 133;
-    --field-opacity: 0.85;
+    /* Only one clip is up at a time; the other waits at zero so a theme
+       change is an opacity cross fade rather than a swap. */
+    --field-dark: 0.26;
+    --field-light: 0;
   }
 
   .theme-light {
@@ -48,10 +54,8 @@
     --fg-faint: 113 113 122;
     --line: 228 228 231;
     --accent: 10 107 79;
-    /* The same hue held at more chroma: laid down thinly over near white, a
-       near black green would only read as grey. */
-    --field: 11 107 79;
-    --field-opacity: 0.5;
+    --field-dark: 0;
+    --field-light: 0.24;
   }
 
   html {
@@ -60,6 +64,9 @@
 
   body {
     font-family: var(--font-body);
+    /* Light is the resting weight of the site; the heavier utilities are the
+       exceptions, not the other way round. */
+    font-weight: 300;
     background-color: rgb(var(--bg));
     color: rgb(var(--fg));
   }
@@ -112,6 +119,47 @@
   }
 
   /*
+   * The background clips. Both are laid over each other and both play; the
+   * theme decides which one is visible, and the change between them is an
+   * opacity fade on the same timing as the rest of the page.
+   */
+  .field-clip {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    transition: opacity 420ms ease;
+  }
+
+  .field-clip-dark {
+    opacity: var(--field-dark, 0);
+  }
+
+  .field-clip-light {
+    opacity: var(--field-light, 0);
+  }
+
+  /* Drawn across the top of the window on each change of section. */
+  .route-sweep {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 45;
+    height: 1px;
+    transform-origin: left center;
+    background-image: linear-gradient(
+      to right,
+      rgb(var(--accent) / 0),
+      rgb(var(--accent) / 0.7),
+      rgb(var(--accent) / 0)
+    );
+    animation: route-sweep 1s cubic-bezier(0.76, 0, 0.24, 1) both;
+    animation-delay: var(--intro-hold, 0ms);
+  }
+
+  /*
    * The entrance. Every element carries the same easing and differs only in
    * its --reveal-delay, so the page arrives in reading order instead of
    * landing all at once.
@@ -152,6 +200,27 @@
       opacity: 1;
       transform: none;
     }
+
+    .route-sweep {
+      display: none;
+    }
+  }
+}
+
+@keyframes route-sweep {
+  from {
+    opacity: 1;
+    transform: scaleX(0);
+  }
+
+  55% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scaleX(1);
   }
 }
 
@@ -186,8 +255,11 @@
   .theme-switching *,
   .theme-switching *::before,
   .theme-switching *::after {
+    /* opacity is in the list because the background clips cross over on it;
+       without it this rule would override their own transition and they would
+       snap while everything around them faded. */
     transition-property: background-color, border-color, color, fill, stroke,
-      outline-color, box-shadow;
+      outline-color, box-shadow, opacity;
     transition-duration: 420ms;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }

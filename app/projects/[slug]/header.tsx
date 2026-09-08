@@ -55,7 +55,7 @@ export const Header: React.FC<Props> = ({ project, views }) => {
 					<div className="flex items-center gap-6 pr-32">
 						<span
 							title="Views of this page"
-							className="flex items-center gap-1 font-mono text-[11px] text-faint"
+							className="flex items-center gap-1 text-[11px] text-faint"
 						>
 							<Eye className="h-4 w-4" />
 							{Intl.NumberFormat("en-US", { notation: "compact" }).format(views)}
@@ -83,7 +83,7 @@ export const Header: React.FC<Props> = ({ project, views }) => {
 
 			<div className="mx-auto max-w-3xl px-6 pb-20 pt-40">
 				{project.tag ? (
-					<p className="font-mono text-[11px] uppercase tracking-[0.16em] text-faint">
+					<p className="text-[11px] uppercase tracking-[0.16em] text-faint">
 						{project.tag}
 					</p>
 				) : null}

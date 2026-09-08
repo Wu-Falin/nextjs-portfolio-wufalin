@@ -1,6 +1,7 @@
 import type { Project } from "@/.contentlayer/generated";
 import { Eye } from "lucide-react";
 import Link from "next/link";
+import React from "react";
 
 type Props = {
 	project: Project;
@@ -14,9 +15,18 @@ type Props = {
  */
 export const Article: React.FC<Props> = ({ project, views, index }) => {
 	return (
-		<li className="group border-b border-line">
-			<Link href={`/projects/${project.slug}`} className="flex items-baseline gap-6 py-10">
-				<span className="font-mono text-[11px] tabular-nums text-faint transition-colors duration-300 group-hover:text-accent">
+		<li
+			// Falls in behind the header, one row after another.
+			style={
+				{ "--reveal-delay": `${460 + index * 110}ms` } as React.CSSProperties
+			}
+			className="reveal group border-b border-line"
+		>
+			<Link
+				href={`/projects/${project.slug}`}
+				className="flex items-baseline gap-6 py-10"
+			>
+				<span className="text-[11px] tabular-nums text-faint transition-colors duration-300 group-hover:text-accent">
 					{String(index + 1).padStart(2, "0")}
 				</span>
 
@@ -26,14 +36,14 @@ export const Article: React.FC<Props> = ({ project, views, index }) => {
 					</h2>
 
 					{project.tag ? (
-						<p className="mt-3 font-mono text-[11px] uppercase tracking-[0.16em] text-faint">
+						<p className="mt-3 text-[11px] uppercase tracking-[0.16em] text-faint">
 							{project.tag}
 						</p>
 					) : null}
 				</div>
 
 				{views > 0 ? (
-					<span className="flex shrink-0 items-center gap-1 font-mono text-[11px] text-faint">
+					<span className="flex shrink-0 items-center gap-1 text-[11px] text-faint">
 						<Eye className="h-3.5 w-3.5" />
 						{Intl.NumberFormat("en-US", { notation: "compact" }).format(views)}
 					</span>
