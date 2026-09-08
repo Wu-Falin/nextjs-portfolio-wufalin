@@ -119,6 +119,28 @@
   .reveal {
     opacity: 0;
     animation: reveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    /* --intro-hold holds the page back while the opening title is up. The
+       bootstrap sets it only when the title will actually play, and clears it
+       once everything has landed, so a later client side visit is not held. */
+    animation-delay: calc(var(--intro-hold, 0ms) + var(--reveal-delay, 0ms));
+  }
+
+  /*
+   * The opening title. Hidden unless the bootstrap marks the document, so the
+   * curtain only exists where something is there to lift it.
+   */
+  .intro {
+    display: none;
+  }
+
+  :root[data-intro] .intro {
+    display: flex;
+    animation: intro-lift 900ms 1500ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  }
+
+  :root[data-intro] .intro-word {
+    opacity: 0;
+    animation: reveal 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
     animation-delay: var(--reveal-delay, 0ms);
   }
 
@@ -130,6 +152,12 @@
       opacity: 1;
       transform: none;
     }
+  }
+}
+
+@keyframes intro-lift {
+  to {
+    transform: translateY(-100%);
   }
 }
 

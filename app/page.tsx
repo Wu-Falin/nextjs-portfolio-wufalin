@@ -22,46 +22,56 @@ const delay = (ms: number) =>
 
 export default function Home() {
 	return (
-		<main className="relative flex min-h-screen w-full flex-col justify-between overflow-hidden px-8 pb-14 pt-28 sm:px-12 sm:pt-32 lg:px-20 lg:pb-16">
-			<div className="max-w-2xl">
+		<main className="relative flex min-h-screen w-full flex-col justify-between overflow-hidden px-10 pb-20 pt-16 sm:px-20 sm:pb-24 sm:pt-20 lg:px-28">
+			{/* A hairline set in from the edge, framing the whole composition. */}
+			<div
+				aria-hidden="true"
+				className="pointer-events-none fixed inset-5 z-30 border border-line sm:inset-7"
+			/>
+
+			<div>
 				<p
-					style={delay(120)}
+					style={delay(80)}
 					className="reveal font-mono text-[10px] uppercase tracking-[0.45em] text-faint"
 				>
 					Information Systems
 				</p>
 
 				<h1
-					style={delay(260)}
-					className="reveal mt-8 text-6xl font-medium leading-[0.95] tracking-[-0.04em] text-fg sm:text-7xl lg:text-8xl"
+					style={delay(200)}
+					className="reveal mt-8 text-[clamp(3.75rem,14vw,11rem)] font-light leading-[0.88] tracking-[0.015em] text-fg"
 				>
 					Falindo
 				</h1>
 
 				<p
-					style={delay(420)}
-					className="reveal mt-7 text-[0.9375rem] leading-relaxed text-muted"
+					style={delay(340)}
+					className="reveal mt-5 text-[0.8125rem] leading-relaxed tracking-[0.02em] text-muted"
 				>
-					Building security tooling toward a junior penetration tester role.
+					Student &amp; aspiring penetration tester
 				</p>
 
-				<nav aria-label="Sections" className="mt-16 sm:mt-20">
-					<NavRail stagger={580} />
+				<nav aria-label="Sections" className="mt-20 sm:mt-24">
+					<NavRail stagger={480} />
 				</nav>
 			</div>
 
 			<div className="mt-24 flex flex-col gap-12 lg:mt-0 lg:flex-row lg:items-end lg:justify-between">
-				<Link
-					href="https://github.com/Wu-Falin"
-					target="_blank"
-					rel="noreferrer"
-					style={delay(980)}
-					className="reveal text-[10px] uppercase tracking-[0.28em] text-faint duration-300 hover:text-fg"
-				>
-					GitHub <span aria-hidden="true">&rarr;</span>
-				</Link>
+				<div style={delay(840)} className="reveal space-y-3">
+					<Link
+						href="https://github.com/Wu-Falin"
+						target="_blank"
+						rel="noreferrer"
+						className="block text-[10px] uppercase tracking-[0.28em] text-faint duration-300 hover:text-fg"
+					>
+						GitHub <span aria-hidden="true">&rarr;</span>
+					</Link>
+					<p className="text-[10px] uppercase tracking-[0.28em] text-faint">
+						&copy; Wu Falin
+					</p>
+				</div>
 
-				<div style={delay(1100)} className="reveal space-y-2 lg:text-right">
+				<div style={delay(940)} className="reveal space-y-2 lg:text-right">
 					{statement.map((line) => (
 						<p
 							key={line}

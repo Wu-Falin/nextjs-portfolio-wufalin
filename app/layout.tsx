@@ -2,6 +2,7 @@ import "../global.css";
 import { Inter } from "@next/font/google";
 import { Metadata } from "next";
 import { Analytics } from "./components/analytics";
+import { Intro } from "./components/intro";
 import Particles from "./components/particles";
 import { SideNav } from "./components/side-nav";
 import { ThemeToggle } from "./components/theme-toggle";
@@ -51,8 +52,13 @@ const inter = Inter({
  * Runs before first paint so the stored theme is on <html> already and the page
  * never flashes the wrong palette. First time visitors follow their system
  * preference for light, and get the dark theme otherwise.
+ *
+ * It also decides whether the opening title plays: only on a full load of the
+ * home page, and never for a visitor who asks for reduced motion. --intro-hold
+ * keeps the page's own entrance behind the curtain, and is cleared once
+ * everything has landed so a later visit through the router is not delayed.
  */
-const themeBootstrap = `(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}document.documentElement.classList.add("theme-"+t);document.documentElement.dataset.theme=t;}catch(e){document.documentElement.classList.add("theme-dark");document.documentElement.dataset.theme="dark";}})();`;
+const themeBootstrap = `(function(){var r=document.documentElement;try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}r.classList.add("theme-"+t);r.dataset.theme=t;}catch(e){r.classList.add("theme-dark");r.dataset.theme="dark";}try{if(location.pathname==="/"&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches){r.dataset.intro="";r.style.setProperty("--intro-hold","1500ms");setTimeout(function(){r.style.removeProperty("--intro-hold");},4000);}}catch(e){}})();`;
 
 export default function RootLayout({
 	children,
@@ -67,13 +73,14 @@ export default function RootLayout({
 				<Analytics />
 			</head>
 			<body className="bg-bg text-fg antialiased">
+				{/* First in the body so the curtain is parsed and painted before
+				    anything it is meant to cover. */}
+				<Intro />
+
 				<Particles className="pointer-events-none fixed inset-0 -z-10" />
 
 				<SideNav />
-
-				<div className="fixed right-6 top-6 z-40">
-					<ThemeToggle />
-				</div>
+				<ThemeToggle />
 
 				{children}
 			</body>
