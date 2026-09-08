@@ -44,7 +44,7 @@ export const NavRail: React.FC<Props> = ({ stagger }) => {
 							className="group flex items-center gap-4 transition-transform duration-500 ease-out hover:translate-x-1.5"
 						>
 							<span
-								className={`w-5 font-mono text-[10px] tabular-nums transition-colors duration-300 ${
+								className={`w-5 text-[10px] tabular-nums transition-colors duration-500 ${
 									active ? "text-accent" : "text-faint group-hover:text-fg"
 								}`}
 							>
@@ -53,7 +53,7 @@ export const NavRail: React.FC<Props> = ({ stagger }) => {
 
 							<span className="relative flex h-3 w-3 items-center justify-center">
 								<span
-									className={`block rounded-full transition-all duration-300 ${
+									className={`block rounded-full transition-all duration-700 ease-out ${
 										active
 											? "h-2 w-2 bg-accent"
 											: "h-1.5 w-1.5 bg-faint/60 group-hover:h-2 group-hover:w-2 group-hover:bg-muted"
@@ -73,15 +73,15 @@ export const NavRail: React.FC<Props> = ({ stagger }) => {
 							</span>
 
 							<span
-								className={`h-px transition-all duration-500 ease-out ${
+								className={`h-px transition-all duration-700 ease-out ${
 									active
-										? "w-6 bg-accent/60"
+										? "w-10 bg-accent/60"
 										: "w-3 bg-line group-hover:w-8 group-hover:bg-muted/60"
 								}`}
 							/>
 
 							<span
-								className={`text-[11px] uppercase tracking-[0.2em] transition-colors duration-300 ${
+								className={`text-[11px] uppercase tracking-[0.2em] transition-colors duration-500 ${
 									active ? "text-fg" : "text-faint group-hover:text-muted"
 								}`}
 							>

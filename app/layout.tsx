@@ -1,9 +1,10 @@
 import "../global.css";
-import { Inter } from "@next/font/google";
+import { Jost } from "@next/font/google";
 import { Metadata } from "next";
 import { Analytics } from "./components/analytics";
+import { Field } from "./components/field";
 import { Intro } from "./components/intro";
-import Particles from "./components/particles";
+import { RouteSweep } from "./components/route-sweep";
 import { SideNav } from "./components/side-nav";
 import { ThemeToggle } from "./components/theme-toggle";
 
@@ -14,16 +15,16 @@ export const metadata: Metadata = {
 		process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
 	),
 	title: {
-		default: "Wu Falin",
-		template: "%s | Wu Falin",
+		default: "Ng Falin",
+		template: "%s | Ng Falin",
 	},
 	description:
 		"Information Systems student building security tooling on the way to a junior penetration tester role.",
 	openGraph: {
-		title: "Wu Falin",
+		title: "Ng Falin",
 		description:
 			"Information Systems student building security tooling on the way to a junior penetration tester role.",
-		siteName: "Wu Falin",
+		siteName: "Ng Falin",
 		locale: "en-US",
 		type: "website",
 	},
@@ -43,9 +44,9 @@ export const metadata: Metadata = {
 	},
 };
 
-const inter = Inter({
+const jost = Jost({
 	subsets: ["latin"],
-	variable: "--font-inter",
+	variable: "--font-sans",
 });
 
 /**
@@ -53,12 +54,12 @@ const inter = Inter({
  * never flashes the wrong palette. First time visitors follow their system
  * preference for light, and get the dark theme otherwise.
  *
- * It also decides whether the opening title plays: only on a full load of the
- * home page, and never for a visitor who asks for reduced motion. --intro-hold
+ * It also decides whether the opening title plays: on a full load of any page,
+ * and never for a visitor who asks for reduced motion. --intro-hold
  * keeps the page's own entrance behind the curtain, and is cleared once
  * everything has landed so a later visit through the router is not delayed.
  */
-const themeBootstrap = `(function(){var r=document.documentElement;try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}r.classList.add("theme-"+t);r.dataset.theme=t;}catch(e){r.classList.add("theme-dark");r.dataset.theme="dark";}try{if(location.pathname==="/"&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches){r.dataset.intro="";r.style.setProperty("--intro-hold","1500ms");setTimeout(function(){r.style.removeProperty("--intro-hold");},4000);}}catch(e){}})();`;
+const themeBootstrap = `(function(){var r=document.documentElement;try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}r.classList.add("theme-"+t);r.dataset.theme=t;}catch(e){r.classList.add("theme-dark");r.dataset.theme="dark";}try{if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches){r.dataset.intro="";r.style.setProperty("--intro-hold","1500ms");setTimeout(function(){r.style.removeProperty("--intro-hold");},4000);}}catch(e){}})();`;
 
 export default function RootLayout({
 	children,
@@ -66,7 +67,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang="en" className={inter.variable} suppressHydrationWarning>
+		<html lang="en" className={jost.variable} suppressHydrationWarning>
 			<head>
 				{/* biome-ignore lint: the theme has to be resolved before paint. */}
 				<script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
@@ -77,7 +78,9 @@ export default function RootLayout({
 				    anything it is meant to cover. */}
 				<Intro />
 
-				<Particles className="pointer-events-none fixed inset-0 -z-10" />
+				<Field className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" />
+
+				<RouteSweep />
 
 				<SideNav />
 				<ThemeToggle />

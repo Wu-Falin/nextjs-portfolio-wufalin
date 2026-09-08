@@ -1,12 +1,12 @@
 "use client";
 
-import { Github, Mail } from "lucide-react";
+import { Github, Linkedin, Mail } from "lucide-react";
 import Link from "next/link";
 import { Card } from "../components/card";
 import { Navigation } from "../components/nav";
 
-// Only real, verified handles belong here. Placeholder for later: add LinkedIn,
-// a CV link, or a security platform profile once those URLs actually exist.
+// Only real, verified handles belong here. Placeholder for later: a CV link or
+// a security platform profile, once those URLs actually exist.
 const socials = [
 	{
 		icon: <Mail size={18} />,
@@ -20,7 +20,20 @@ const socials = [
 		label: "GitHub",
 		handle: "Wu-Falin",
 	},
+	{
+		icon: <Linkedin size={18} />,
+		href: "https://www.linkedin.com/in/ng-falin-493363260",
+		label: "LinkedIn",
+		handle: "ng-falin",
+	},
 ];
+
+/**
+ * The section's entrance. Runs on arrival and again on every navigation back,
+ * since the page is mounted fresh each time.
+ */
+const delay = (ms: number) =>
+	({ "--reveal-delay": `${ms}ms` }) as React.CSSProperties;
 
 export default function ContactPage() {
 	return (
@@ -29,19 +42,31 @@ export default function ContactPage() {
 
 			<main className="mx-auto max-w-3xl px-6 pb-32 pt-36 lg:pt-44">
 				<header>
-					<p className="font-mono text-[10px] uppercase tracking-[0.45em] text-faint">
+					<p
+						style={delay(80)}
+						className="reveal text-[10px] uppercase tracking-[0.45em] text-faint"
+					>
 						03 / contact
 					</p>
-					<h1 className="mt-8 text-3xl font-medium tracking-[-0.02em] text-fg sm:text-4xl">
+					<h1
+						style={delay(200)}
+						className="reveal mt-8 text-3xl font-medium tracking-[-0.02em] text-fg sm:text-4xl"
+					>
 						Get in touch
 					</h1>
-					<p className="mt-6 max-w-md text-[0.9375rem] leading-[1.9] text-muted">
+					<p
+						style={delay(320)}
+						className="reveal mt-6 max-w-md text-[0.9375rem] leading-[1.9] text-muted"
+					>
 						Open to junior penetration testing roles, internships, and anything
 						else where I can keep learning offensive security in practice.
 					</p>
 				</header>
 
-				<div className="mt-20 grid grid-cols-1 gap-6 sm:grid-cols-2">
+				<div
+					style={delay(460)}
+					className="reveal mt-20 grid grid-cols-1 gap-6 sm:grid-cols-2"
+				>
 					{socials.map((social) => (
 						<Card key={social.label}>
 							<Link
@@ -55,7 +80,7 @@ export default function ContactPage() {
 								</span>
 
 								<span className="relative z-10 flex flex-col gap-1">
-									<span className="font-mono text-[11px] uppercase tracking-[0.2em] text-faint">
+									<span className="text-[11px] uppercase tracking-[0.2em] text-faint">
 										{social.label}
 									</span>
 									<span className="break-all text-base font-medium text-fg duration-500 group-hover:text-accent">

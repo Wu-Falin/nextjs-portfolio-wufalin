@@ -18,7 +18,7 @@ export const SideNav: React.FC = () => {
 			aria-label="Sections"
 			className="fixed left-10 top-1/2 z-40 hidden -translate-y-1/2 lg:block xl:left-16"
 		>
-			<NavRail />
+			<NavRail stagger={520} />
 		</nav>
 	);
 };
