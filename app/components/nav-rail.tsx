@@ -41,11 +41,11 @@ export const NavRail: React.FC<Props> = ({ stagger }) => {
 						<Link
 							href={section.href}
 							aria-current={active ? "page" : undefined}
-							className="group flex items-center gap-4"
+							className="group flex items-center gap-4 transition-transform duration-500 ease-out hover:translate-x-1.5"
 						>
 							<span
 								className={`w-5 font-mono text-[10px] tabular-nums transition-colors duration-300 ${
-									active ? "text-accent" : "text-faint group-hover:text-muted"
+									active ? "text-accent" : "text-faint group-hover:text-fg"
 								}`}
 							>
 								{String(index + 1).padStart(2, "0")}
@@ -56,19 +56,27 @@ export const NavRail: React.FC<Props> = ({ stagger }) => {
 									className={`block rounded-full transition-all duration-300 ${
 										active
 											? "h-2 w-2 bg-accent"
-											: "h-1.5 w-1.5 bg-faint/60 group-hover:bg-muted"
+											: "h-1.5 w-1.5 bg-faint/60 group-hover:h-2 group-hover:w-2 group-hover:bg-muted"
 									}`}
 								/>
-								{active ? (
-									<span className="absolute h-3 w-3 rounded-full border border-accent motion-safe:animate-halo" />
-								) : null}
+								{/* The section you are on pulses on its own; the others borrow
+								    the same pulse while the pointer is on them, so every row
+								    answers with the same gesture. Held at zero opacity
+								    otherwise, since the keyframes carry their own. */}
+								<span
+									className={
+										active
+											? "absolute h-3 w-3 rounded-full border border-accent motion-safe:animate-halo"
+											: "absolute h-3 w-3 rounded-full border border-muted opacity-0 motion-safe:group-hover:animate-halo"
+									}
+								/>
 							</span>
 
 							<span
-								className={`h-px transition-all duration-300 ${
+								className={`h-px transition-all duration-500 ease-out ${
 									active
 										? "w-6 bg-accent/60"
-										: "w-3 bg-line group-hover:w-6 group-hover:bg-muted/60"
+										: "w-3 bg-line group-hover:w-8 group-hover:bg-muted/60"
 								}`}
 							/>
 

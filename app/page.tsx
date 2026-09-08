@@ -23,10 +23,12 @@ const delay = (ms: number) =>
 export default function Home() {
 	return (
 		<main className="relative flex min-h-screen w-full flex-col justify-between overflow-hidden px-10 pb-20 pt-16 sm:px-20 sm:pb-24 sm:pt-20 lg:px-28">
-			{/* A hairline set in from the edge, framing the whole composition. */}
+			{/* A hairline set in from the edge, framing the whole composition.
+			    Absolute rather than fixed: on a short window the page scrolls, and
+			    a frame pinned to the viewport would cut across its own content. */}
 			<div
 				aria-hidden="true"
-				className="pointer-events-none fixed inset-5 z-30 border border-line sm:inset-7"
+				className="pointer-events-none absolute inset-5 z-30 border border-line sm:inset-7"
 			/>
 
 			<div>
