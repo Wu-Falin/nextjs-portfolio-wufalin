@@ -10,7 +10,6 @@ type Props = {
 		title: string;
 		description: string;
 		repository?: string;
-		date?: string;
 		tag?: string;
 	};
 
@@ -83,23 +82,11 @@ export const Header: React.FC<Props> = ({ project, views }) => {
 			</div>
 
 			<div className="mx-auto max-w-3xl px-6 pb-16 pt-32">
-				<p className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-faint">
-					{project.date ? (
-						<time dateTime={new Date(project.date).toISOString()}>
-							{Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(
-								new Date(project.date),
-							)}
-						</time>
-					) : null}
-					{project.tag ? (
-						<>
-							<span aria-hidden="true" className="text-line">
-								/
-							</span>
-							<span className="uppercase tracking-[0.12em]">{project.tag}</span>
-						</>
-					) : null}
-				</p>
+				{project.tag ? (
+					<p className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint">
+						{project.tag}
+					</p>
+				) : null}
 
 				<h1 className="mt-4 text-3xl font-bold tracking-tight text-fg sm:text-5xl">
 					{project.title}

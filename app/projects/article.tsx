@@ -10,7 +10,7 @@ type Props = {
 
 /**
  * One row of the project list: the title carries the link, and a single quiet
- * line underneath holds the date and the tag it maps to.
+ * line underneath holds the tag it maps to.
  */
 export const Article: React.FC<Props> = ({ project, views, index }) => {
 	return (
@@ -25,25 +25,11 @@ export const Article: React.FC<Props> = ({ project, views, index }) => {
 						{project.title}
 					</h2>
 
-					<p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-faint">
-						{project.date ? (
-							<time dateTime={new Date(project.date).toISOString()}>
-								{Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(
-									new Date(project.date),
-								)}
-							</time>
-						) : (
-							<span>Soon</span>
-						)}
-						{project.tag ? (
-							<>
-								<span aria-hidden="true" className="text-line">
-									/
-								</span>
-								<span className="uppercase tracking-[0.12em]">{project.tag}</span>
-							</>
-						) : null}
-					</p>
+					{project.tag ? (
+						<p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-faint">
+							{project.tag}
+						</p>
+					) : null}
 				</div>
 
 				{views > 0 ? (

@@ -49,8 +49,9 @@ tag: WSTG-XXXX-00
 ---
 ```
 
-`tag` is the short label shown next to the date in the project list, and `url`
-is available for projects with a live site.
+`tag` is the short label shown under the title in the project list, and `url`
+is available for projects with a live site. `date` is only used to order the
+list - it is never displayed.
 
 ## License
 

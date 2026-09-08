@@ -45,7 +45,18 @@ export default async function PostPage({ params }: Props) {
 
 	return (
 		<div className="min-h-screen">
-			<Header project={project} views={views} />
+			{/* Pass only what the header renders, so unused frontmatter (the sort
+			    order date) never reaches the client payload. */}
+			<Header
+				project={{
+					title: project.title,
+					description: project.description,
+					url: project.url,
+					repository: project.repository,
+					tag: project.tag,
+				}}
+				views={views}
+			/>
 			<ReportView slug={project.slug} />
 
 			<article className="mx-auto max-w-3xl px-6 py-16">
