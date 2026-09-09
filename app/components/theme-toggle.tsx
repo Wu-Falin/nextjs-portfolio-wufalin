@@ -1,14 +1,16 @@
 "use client";
 
+import { Moon, Sun } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 export type Theme = "light" | "dark";
 
 /** Listed in the order they read from the bottom of the vertical rail up. */
-export const THEMES: { value: Theme; label: string }[] = [
-	{ value: "light", label: "Light" },
-	{ value: "dark", label: "Dark" },
-];
+export const THEMES: { value: Theme; label: string; icon: React.ReactNode }[] =
+	[
+		{ value: "light", label: "Light", icon: <Sun className="h-4 w-4" /> },
+		{ value: "dark", label: "Dark", icon: <Moon className="h-4 w-4" /> },
+	];
 
 const STORAGE_KEY = "theme";
 
@@ -44,7 +46,8 @@ function apply(theme: Theme) {
 /**
  * Set in the bottom left margin as a pair of upright labels, each with a small
  * square that fills for the theme you are on. Narrow screens have no margin to
- * spare, so there it falls back to a horizontal row in the top corner.
+ * spare: there it shrinks to two icons in the top corner, narrow enough to sit
+ * beside the section links in the top bar rather than across them.
  */
 export const ThemeToggle: React.FC = () => {
 	// Rendered inert on the server; the inline bootstrap script in the document
@@ -65,7 +68,7 @@ export const ThemeToggle: React.FC = () => {
 		<div
 			role="group"
 			aria-label="Colour theme"
-			className="fixed right-10 top-9 z-40 flex items-center gap-5 sm:bottom-12 sm:left-11 sm:right-auto sm:top-auto sm:flex-col-reverse sm:items-start"
+			className="fixed right-6 top-5 z-40 flex items-center gap-3 sm:bottom-12 sm:left-11 sm:right-auto sm:top-auto sm:gap-5 sm:flex-col-reverse sm:items-start"
 		>
 			{THEMES.map((option) => {
 				const active = theme === option.value;
@@ -75,22 +78,31 @@ export const ThemeToggle: React.FC = () => {
 						type="button"
 						onClick={() => select(option.value)}
 						aria-pressed={active}
+						title={option.label}
 						className="group flex items-center gap-2 sm:flex-col-reverse sm:gap-3"
 					>
 						<span
-							className={`h-[7px] w-[7px] border transition-colors duration-300 ${
+							className={`hidden h-[7px] w-[7px] border transition-colors duration-300 sm:block ${
 								active
 									? "border-accent bg-accent"
 									: "border-faint/70 group-hover:border-muted"
 							}`}
 						/>
 						<span
-							className={`on-field text-[10px] uppercase tracking-[0.25em] transition-colors duration-300 sm:rotate-180 sm:[writing-mode:vertical-rl] ${
+							className={`on-field transition-colors duration-300 sm:hidden ${
+								active ? "text-accent" : "text-faint"
+							}`}
+						>
+							{option.icon}
+						</span>
+						<span
+							className={`on-field hidden text-[10px] uppercase tracking-[0.25em] transition-colors duration-300 sm:block sm:rotate-180 sm:[writing-mode:vertical-rl] ${
 								active ? "text-fg" : "text-faint group-hover:text-muted"
 							}`}
 						>
 							{option.label}
 						</span>
+						<span className="sr-only">{option.label}</span>
 					</button>
 				);
 			})}

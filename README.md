@@ -15,19 +15,18 @@ and [Contentlayer](https://www.contentlayer.dev/), with an optional
 - **Numbered rail** — the same list of sections everywhere: the home page lays
   it out inline in its left column, other pages pin it to the left edge on wide
   screens, and a top bar takes over on narrow ones.
-- **Ambient background** — a 4.5s looping plume of particles, tinted
-  phthalo green. The source is 720x1280, so the clips are enlarged to 2560x1440
-  with lanczos and sharpened at encode time rather than left for the browser to
-  stretch: full bleed on a 2x laptop the browser was blowing 720p up by 2.7x,
-  which is what turned each particle to mush. It now draws them at or below
-  their own size on every common screen. Two clips are shipped, one per theme,
-  each with its colour and its theme's background baked in, so switching themes is an opacity cross fade
-  rather than a blend mode that cannot animate. Only the theme on screen is
-  downloaded; the other waits on its poster until the first time you switch to
-  it. The loop is cut with the tail cross faded back over the head, so it
-  repeats without a seam. Paused while the tab is hidden, and under
-  `prefers-reduced-motion` the still frame is served on its own and no clip is
-  downloaded at all.
+- **Ambient background** — a field of particles drawn to a canvas rather than
+  filmed. A clip is capped at its own resolution and has to be stretched to
+  fill the window, which is what left every particle a smudge on a dense
+  screen; the canvas is sized in device pixels, so each particle is a point at
+  1x, 2x or 4k, and the whole thing is a few kilobytes instead of a few
+  megabytes. Motion is a curl noise flow field - velocity taken as the curl of
+  a potential, so it is divergence free and winds into filaments rather than
+  collecting in sinks - with a per particle lean and a finer second turn so
+  neighbours separate instead of combing into one stroke. Particles gather into
+  masses by rejection sampling, weighted toward the lower right to leave the
+  name and the rail their space. Paused while the tab is hidden, and under
+  `prefers-reduced-motion` it settles one still frame and stops.
 - **Words over the field** — a scrim weighted to the left column and the bottom
   right corner, plus a halo in the page colour behind the text, so the plume
   can run at full strength and every block still clears 5.8:1 against the
