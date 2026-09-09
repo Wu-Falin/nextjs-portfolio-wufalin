@@ -19,7 +19,7 @@ const statement = [
 	"Practical security skills, built by making things.",
 	"Every project works through part of the OWASP guide.",
 	"Notes and code stay public as I go.",
-	"Open to junior roles and internships.",
+	"Open to junior security roles.",
 ];
 
 /**
@@ -45,7 +45,7 @@ export default function Home() {
 					style={delay(80)}
 					className="reveal on-field text-[10px] uppercase tracking-[0.45em] text-faint"
 				>
-					Information Systems
+					Portfolio
 				</p>
 
 				<h1
@@ -59,7 +59,7 @@ export default function Home() {
 					style={delay(340)}
 					className="reveal on-field mt-6 text-[0.8125rem] leading-relaxed tracking-[0.06em] text-muted"
 				>
-					Student &amp; aspiring penetration tester
+					Undergraduate student &amp; aspiring penetration tester
 				</p>
 
 				<nav aria-label="Sections" className="mt-20 sm:mt-24">
@@ -85,15 +85,20 @@ export default function Home() {
 					</p>
 				</div>
 
-				<div style={delay(940)} className="reveal space-y-2 lg:text-right">
-					{statement.map((line) => (
-						<p
-							key={line}
-							className="on-field text-[0.8125rem] leading-relaxed text-muted"
-						>
-							{line}
-						</p>
-					))}
+				<div style={delay(940)} className="reveal lg:text-right">
+					<p className="on-field text-[10px] uppercase tracking-[0.45em] text-faint">
+						Information Systems
+					</p>
+					<div className="mt-5 space-y-2">
+						{statement.map((line) => (
+							<p
+								key={line}
+								className="on-field text-[0.8125rem] leading-relaxed text-muted"
+							>
+								{line}
+							</p>
+						))}
+					</div>
 				</div>
 			</div>
 		</main>

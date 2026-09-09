@@ -36,12 +36,12 @@
     --bg-soft: 24 24 27;
     --fg: 244 244 245;
     --fg-muted: 161 161 170;
-    --fg-faint: 150 150 160;
+    --fg-faint: 165 165 175;
     --line: 39 39 42;
-    --accent: 99 210 164;
+    --accent: 253 186 116;
     /* Only one clip is up at a time; the other waits at zero so a theme
        change is an opacity cross fade rather than a swap. */
-    --field-dark: 0.8;
+    --field-dark: 0.72;
     --field-light: 0;
   }
 
@@ -51,11 +51,11 @@
     --bg-soft: 255 255 255;
     --fg: 24 24 27;
     --fg-muted: 82 82 91;
-    --fg-faint: 88 88 97;
+    --fg-faint: 82 82 91;
     --line: 228 228 231;
-    --accent: 10 107 79;
+    --accent: 154 52 18;
     --field-dark: 0;
-    --field-light: 0.72;
+    --field-light: 0.66;
   }
 
   html {
@@ -167,6 +167,36 @@
         rgb(var(--bg) / 0.4) 50%,
         rgb(var(--bg) / 0) 100%
       );
+  }
+
+  /*
+   * The pages that are actually read put their column down the middle, which
+   * is the one part of the window the scrim deliberately leaves open so the
+   * field can carry. Those pages lay their own ground under the column, so the
+   * front page keeps the field at full strength and reading still holds.
+   */
+  .reading-ground {
+    position: relative;
+  }
+
+  .reading-ground::before {
+    content: "";
+    position: absolute;
+    /* No horizontal bleed: on a narrow screen it would widen the document and
+       give the page a sideways scroll. The gradient feathers within its own
+       width instead. */
+    inset: -3rem 0;
+    z-index: -1;
+    pointer-events: none;
+    /* Feathered at the sides and even down its length: a radial thinned out
+       toward the foot of a long list, which is where the last rows sit. */
+    background-image: linear-gradient(
+      to right,
+      rgb(var(--bg) / 0) 0%,
+      rgb(var(--bg) / 0.78) 14%,
+      rgb(var(--bg) / 0.78) 86%,
+      rgb(var(--bg) / 0) 100%
+    );
   }
 
   /*
@@ -328,8 +358,8 @@
        without it this rule would override their own transition and they would
        snap while everything around them faded. */
     transition-property: background-color, border-color, color, fill, stroke,
-      outline-color, box-shadow, opacity;
-    transition-duration: 420ms;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      outline-color, box-shadow, opacity, text-shadow;
+    transition-duration: 750ms;
+    transition-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
   }
 }

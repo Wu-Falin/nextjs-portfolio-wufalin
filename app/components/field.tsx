@@ -45,7 +45,7 @@ const clips = [
 ];
 
 /** Matches the theme cross fade elsewhere on the page. */
-const BLEND_MS = 420;
+const BLEND_MS = 750;
 
 const readTheme = (): ThemeName =>
 	document.documentElement.dataset.theme === "light" ? "light" : "dark";
@@ -159,12 +159,23 @@ export const Field: React.FC<{ className?: string }> = ({ className = "" }) => {
 
 			const step = since ? Math.min(1, (now - since) / BLEND_MS) : 1;
 			const ease = step * step * (3 - 2 * step);
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 			players.forEach((player, i) => {
 				weight[i] = from[i] + (target[i] - from[i]) * ease;
-				if (weight[i] < 0.004 || player.readyState < 2) return;
-				ctx.globalAlpha = weight[i];
+			});
+
+			// A clip hands back no frame for a moment as it comes round to the
+			// start again. Clearing first and finding nothing to draw is what put
+			// a blank frame in the loop; if nothing is ready, the last good frame
+			// stays up instead and the seam passes unseen.
+			const ready = players.filter(
+				(player, i) => weight[i] >= 0.004 && player.readyState >= 2,
+			);
+			if (!ready.length) return;
+
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			for (const player of ready) {
+				ctx.globalAlpha = weight[players.indexOf(player)];
 				ctx.drawImage(
 					player,
 					crop.sx,
@@ -176,7 +187,7 @@ export const Field: React.FC<{ className?: string }> = ({ className = "" }) => {
 					canvas.width,
 					canvas.height,
 				);
-			});
+			}
 			ctx.globalAlpha = 1;
 		};
 

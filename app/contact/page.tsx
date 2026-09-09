@@ -48,26 +48,26 @@ export default function ContactPage() {
 		<div className="relative min-h-screen">
 			<Navigation />
 
-			<main className="mx-auto max-w-3xl px-6 pb-32 pt-36 lg:pt-44">
+			<main className="reading-ground mx-auto max-w-3xl px-6 pb-32 pt-36 lg:pt-44">
 				<header>
 					<p
 						style={delay(80)}
-						className="reveal text-[10px] uppercase tracking-[0.45em] text-faint"
+						className="reveal on-field text-[10px] uppercase tracking-[0.45em] text-faint"
 					>
 						contact
 					</p>
 					<h1
 						style={delay(200)}
-						className="reveal mt-8 text-3xl font-medium tracking-[-0.02em] text-fg sm:text-4xl"
+						className="reveal on-field mt-8 text-3xl font-medium tracking-[-0.02em] text-fg sm:text-4xl"
 					>
 						Get in touch
 					</h1>
 					<p
 						style={delay(320)}
-						className="reveal mt-6 max-w-md text-[0.9375rem] leading-[1.9] text-muted"
+						className="reveal on-field mt-6 max-w-md text-[0.9375rem] leading-[1.9] text-muted"
 					>
-						Open to junior penetration testing roles, internships, and anything
-						else where I can keep learning offensive security in practice.
+						Open to junior penetration testing roles, and anything else where I
+						can keep learning offensive security in practice.
 					</p>
 				</header>
 
@@ -88,10 +88,10 @@ export default function ContactPage() {
 								</span>
 
 								<span className="relative z-10 flex flex-col gap-1">
-									<span className="text-[11px] uppercase tracking-[0.2em] text-faint">
+									<span className="on-field text-[11px] uppercase tracking-[0.2em] text-faint">
 										{social.label}
 									</span>
-									<span className="break-all text-base font-medium text-fg duration-500 group-hover:text-accent">
+									<span className="on-field break-all text-base font-medium text-fg duration-500 group-hover:text-accent">
 										{social.handle}
 									</span>
 								</span>

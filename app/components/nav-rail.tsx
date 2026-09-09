@@ -14,8 +14,8 @@ type Props = {
 };
 
 /**
- * The list of sections: a dot that fills in for the section you are on, a rule
- * that grows on hover, and the label. The home page lays this out inside its
+ * The list of sections: a rule that lengthens for the section you are on and
+ * grows on hover, and the label. The home page lays this out inside its
  * own left column; every other page pins it to the edge.
  */
 export const NavRail: React.FC<Props> = ({ stagger }) => {
@@ -43,27 +43,6 @@ export const NavRail: React.FC<Props> = ({ stagger }) => {
 							aria-current={active ? "page" : undefined}
 							className="group flex items-center gap-4 transition-transform duration-500 ease-out hover:translate-x-1.5"
 						>
-							<span className="relative flex h-3 w-3 items-center justify-center">
-								<span
-									className={`block rounded-full transition-all duration-700 ease-out ${
-										active
-											? "h-2 w-2 bg-accent"
-											: "h-1.5 w-1.5 bg-faint/60 group-hover:h-2 group-hover:w-2 group-hover:bg-muted"
-									}`}
-								/>
-								{/* The section you are on pulses on its own; the others borrow
-								    the same pulse while the pointer is on them, so every row
-								    answers with the same gesture. Held at zero opacity
-								    otherwise, since the keyframes carry their own. */}
-								<span
-									className={
-										active
-											? "absolute h-3 w-3 rounded-full border border-accent motion-safe:animate-halo"
-											: "absolute h-3 w-3 rounded-full border border-muted opacity-0 motion-safe:group-hover:animate-halo"
-									}
-								/>
-							</span>
-
 							<span
 								className={`h-px transition-all duration-700 ease-out ${
 									active
