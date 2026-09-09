@@ -178,6 +178,35 @@
     text-shadow: 0 0 22px rgb(var(--bg)), 0 0 8px rgb(var(--bg) / 0.95);
   }
 
+  /*
+   * The clips themselves are never shown; they are only a source for the
+   * canvas. Kept at their own size and invisible rather than removed, since a
+   * detached video does not decode.
+   */
+  .field-source {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 180px;
+    width: 320px;
+    opacity: 0;
+  }
+
+  /*
+   * The canvas holds the source crop at 1:1, so this is the only enlargement
+   * and it is the one place the browser honours the request for hard pixels -
+   * image-rendering does nothing on a video element in Chromium.
+   */
+  .field-canvas {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+  }
+
   /* Drawn across the top of the window on each change of section. */
   .route-sweep {
     position: fixed;

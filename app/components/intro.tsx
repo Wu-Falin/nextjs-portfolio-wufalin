@@ -12,8 +12,19 @@ import React, { useEffect } from "react";
  * pointer events, so there is no state in which it can cover the page.
  *
  * On top of that, the name walks from the middle of the curtain to where the
- * heading sits, growing and thinning as it goes. That part is scripted, and
- * deliberately additive: if it never runs, the curtain still clears on its own
+ * heading sits, growing and thinning as it goes. The heading itself makes that
+ * walk - it is lifted over the curtain, carried back to the title's place and
+ * released - rather than a copy walking there and handing over at the end. A
+ * copy has to be positioned by matching font metrics, and any fraction it gets
+ * wrong shows up as a jump exactly when the walk finishes; the real element
+ * cannot land anywhere but where it belongs.
+ *
+ * Scale carries the size rather than font-size, so nothing below it reflows,
+ * and weight rides alongside: a glyph set at the heading's size and scaled down
+ * is the same shape as one set small, so the two match at the start without
+ * having to be measured against each other.
+ *
+ * All of it is additive: if it never runs, the curtain still clears on its own
  * and the heading still arrives under its own entrance.
  */
 const delay = (ms: number) =>
@@ -21,7 +32,6 @@ const delay = (ms: number) =>
 
 /** Matches the curtain's own timing in global.css. */
 const TRAVEL_MS = 900;
-const SETTLE_MS = 180;
 
 /** The text's own box, rather than the block it sits in. */
 const textRect = (el: Element) => {
@@ -41,53 +51,45 @@ export const Intro: React.FC = () => {
 		const heading = document.querySelector<HTMLElement>(".hero-name");
 		if (!name || !heading || typeof name.animate !== "function") return;
 
-		let flier: HTMLElement | null = null;
-		let started = false;
+		let walked = false;
 
 		const walk = () => {
-			if (started) return;
-			started = true;
+			if (walked) return;
+			walked = true;
 
 			const from = textRect(name);
 			const to = textRect(heading);
+			const box = heading.getBoundingClientRect();
 			if (!from.width || !to.width) return;
 
 			const a = getComputedStyle(name);
 			const b = getComputedStyle(heading);
+			const shrink =
+				Number.parseFloat(a.fontSize) / Number.parseFloat(b.fontSize);
+			if (!Number.isFinite(shrink) || shrink <= 0) return;
 
-			// The heading holds still and empty until the walk lands on it.
 			for (const running of heading.getAnimations()) running.cancel();
-			heading.style.opacity = "0";
-
-			flier = document.createElement("span");
-			flier.textContent = name.textContent;
-			flier.setAttribute("aria-hidden", "true");
-			// Parked where the heading will be, then carried back to the middle,
-			// so it arrives on the heading's own left edge rather than near it.
-			flier.style.cssText = `position:fixed;left:${to.left}px;top:${to.top}px;z-index:60;pointer-events:none;white-space:nowrap;font-family:${a.fontFamily};margin:0;`;
-			document.body.appendChild(flier);
+			// Scaled about the text's own corner, so that corner is the fixed point
+			// and the offset below is simply the distance between the two.
+			heading.style.transformOrigin = `${to.left - box.left}px ${
+				to.top - box.top
+			}px`;
+			// Over the curtain for the length of the walk, so it is the same name
+			// carrying on rather than a second one fading up behind the first.
+			heading.style.position = "relative";
+			heading.style.zIndex = "60";
+			heading.style.opacity = "1";
 			name.style.visibility = "hidden";
 
-			const travel = flier.animate(
+			const release = heading.animate(
 				[
 					{
 						transform: `translate(${from.left - to.left}px, ${
 							from.top - to.top
-						}px)`,
-						fontSize: a.fontSize,
+						}px) scale(${shrink})`,
 						fontWeight: a.fontWeight,
-						letterSpacing: a.letterSpacing,
-						lineHeight: a.lineHeight,
-						color: a.color,
 					},
-					{
-						transform: "translate(0px, 0px)",
-						fontSize: b.fontSize,
-						fontWeight: b.fontWeight,
-						letterSpacing: b.letterSpacing,
-						lineHeight: b.lineHeight,
-						color: b.color,
-					},
+					{ transform: "none", fontWeight: b.fontWeight },
 				],
 				{
 					duration: TRAVEL_MS,
@@ -96,28 +98,19 @@ export const Intro: React.FC = () => {
 				},
 			);
 
-			travel.finished
-				.then(() => {
-					// The two are the same words at the same size by now, so this only
-					// has to cover whatever fraction of a pixel they disagree on.
-					heading.animate([{ opacity: 0 }, { opacity: 1 }], {
-						duration: SETTLE_MS,
-						fill: "forwards",
-					});
-					heading.style.opacity = "1";
-					flier
-						?.animate([{ opacity: 1 }, { opacity: 0 }], {
-							duration: SETTLE_MS,
-							fill: "forwards",
-						})
-						.finished.then(() => flier?.remove());
-				})
-				.catch(() => {
-					// Interrupted, by a resize or by leaving the page. Put the heading
-					// back rather than leaving it blank.
-					heading.style.opacity = "1";
-					flier?.remove();
-				});
+			const land = () => {
+				// Hand the element back to its own styles. Nothing moves: the walk
+				// ended on the position the stylesheet already gives it.
+				release.cancel();
+				heading.style.transform = "";
+				heading.style.transformOrigin = "";
+				heading.style.fontWeight = "";
+				heading.style.position = "";
+				heading.style.zIndex = "";
+				heading.style.opacity = "1";
+			};
+
+			release.finished.then(land, land);
 		};
 
 		// The curtain's own clear is the cue, so the two stay in step without
