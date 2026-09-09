@@ -15,7 +15,7 @@ export const THEMES: { value: Theme; label: string; icon: React.ReactNode }[] =
 const STORAGE_KEY = "theme";
 
 /** Matches the fade length in global.css, with a little slack on the end. */
-const SWITCH_MS = 480;
+const SWITCH_MS = 820;
 
 let switchTimer: number | undefined;
 
