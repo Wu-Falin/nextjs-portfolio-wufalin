@@ -15,10 +15,13 @@ and [Contentlayer](https://www.contentlayer.dev/), with an optional
 - **Numbered rail** — the same list of sections everywhere: the home page lays
   it out inline in its left column, other pages pin it to the left edge on wide
   screens, and a top bar takes over on narrow ones.
-- **Ambient background** — a 4.5s looping plume of particles at the source's
-  native 720p and a quality that keeps the individual grain, tinted
-  phthalo green. Two clips are shipped, one per theme, each with its colour and
-  its theme's background baked in, so switching themes is an opacity cross fade
+- **Ambient background** — a 4.5s looping plume of particles, tinted
+  phthalo green. The source is 720x1280, so the clips are enlarged to 2560x1440
+  with lanczos and sharpened at encode time rather than left for the browser to
+  stretch: full bleed on a 2x laptop the browser was blowing 720p up by 2.7x,
+  which is what turned each particle to mush. It now draws them at or below
+  their own size on every common screen. Two clips are shipped, one per theme,
+  each with its colour and its theme's background baked in, so switching themes is an opacity cross fade
   rather than a blend mode that cannot animate. Only the theme on screen is
   downloaded; the other waits on its poster until the first time you switch to
   it. The loop is cut with the tail cross faded back over the head, so it
