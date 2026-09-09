@@ -35,7 +35,7 @@ export const Navigation: React.FC = () => {
 			>
 				<div className="container mx-auto flex flex-row-reverse items-center justify-between p-6">
 					{/* Right padding keeps these clear of the fixed theme toggle. */}
-					<div className="flex items-center gap-6 pr-24">
+					<div className="flex items-center gap-5 pr-14">
 						{sections
 							.filter((section) => section.href !== "/")
 							.map((section) => (

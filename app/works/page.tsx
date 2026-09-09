@@ -1,10 +1,6 @@
-import { allProjects } from "contentlayer/generated";
 import React from "react";
-import { getViews } from "@/util/redis";
 import { Navigation } from "../components/nav";
-import { Article } from "./article";
-
-export const revalidate = 60;
+import { Entry } from "./entry";
 
 /**
  * The section's entrance. Runs on arrival and again on every navigation back,
@@ -14,22 +10,29 @@ const delay = (ms: number) =>
 	({ "--reveal-delay": `${ms}ms` }) as React.CSSProperties;
 
 export const metadata = {
-	title: "Projects",
-	description:
-		"Security tooling built to practise web application testing methodology.",
+	title: "Works",
+	description: "Security work currently underway, ahead of being written up.",
 };
 
-export default async function ProjectsPage() {
-	const projects = allProjects
-		.filter((project) => project.published)
-		.sort(
-			(a, b) =>
-				new Date(b.date ?? Number.POSITIVE_INFINITY).getTime() -
-				new Date(a.date ?? Number.POSITIVE_INFINITY).getTime(),
-		);
+const works = [
+	{
+		title: "University Network Security Assessment",
+		summary:
+			"Scoping an authorized security assessment for my university's IT faculty network, currently finalizing scope and approval with faculty stakeholders.",
+	},
+	{
+		title: "OWASP Juice Shop — WSTG-Mapped Pentest",
+		summary:
+			"Working through a full penetration test against a self-hosted Juice Shop instance, documenting each finding against the OWASP Web Security Testing Guide.",
+	},
+	{
+		title: "Hack The Box",
+		summary:
+			"Building hands-on exploitation experience through HTB machines as ongoing practice.",
+	},
+];
 
-	const views = await getViews(projects.map((project) => project.slug));
-
+export default function WorksPage() {
 	return (
 		<div className="relative min-h-screen">
 			<Navigation />
@@ -40,30 +43,29 @@ export default async function ProjectsPage() {
 						style={delay(80)}
 						className="reveal on-field text-[10px] uppercase tracking-[0.45em] text-faint"
 					>
-						projects
+						works
 					</p>
 					<h1
 						style={delay(200)}
 						className="reveal on-field mt-8 text-3xl font-medium tracking-[-0.02em] text-fg sm:text-4xl"
 					>
-						Projects
+						Works
 					</h1>
 					<p
 						style={delay(320)}
 						className="reveal on-field mt-6 max-w-md text-[0.9375rem] leading-[1.9] text-muted"
 					>
-						Tools I build to work through web application testing methodology
-						hands on. Each one maps to a section of the OWASP Web Security
-						Testing Guide.
+						Things I&apos;m actively working on, not finished yet &mdash; check
+						back as these get written up properly.
 					</p>
 				</header>
 
 				<ol className="mt-20 border-t border-line">
-					{projects.map((project, index) => (
-						<Article
-							key={project.slug}
-							project={project}
-							views={views[project.slug] ?? 0}
+					{works.map((work, index) => (
+						<Entry
+							key={work.title}
+							title={work.title}
+							summary={work.summary}
 							index={index}
 						/>
 					))}

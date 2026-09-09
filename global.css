@@ -38,10 +38,10 @@
     --fg-muted: 161 161 170;
     --fg-faint: 165 165 175;
     --line: 39 39 42;
-    --accent: 253 186 116;
+    --accent: 99 210 164;
     /* Only one clip is up at a time; the other waits at zero so a theme
        change is an opacity cross fade rather than a swap. */
-    --field-dark: 0.72;
+    --field-dark: 0.78;
     --field-light: 0;
   }
 
@@ -217,8 +217,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 180px;
-    width: 320px;
+    height: 270px;
+    width: 480px;
     opacity: 0;
   }
 

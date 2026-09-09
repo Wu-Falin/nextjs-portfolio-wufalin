@@ -1,7 +1,8 @@
 /** The site's top level sections, in the order the side navigation lists them. */
 export const sections = [
 	{ href: "/", label: "index" },
-	{ href: "/projects", label: "work" },
+	{ href: "/projects", label: "projects" },
+	{ href: "/works", label: "works" },
 	{ href: "/contact", label: "contact" },
 ] as const;
 
