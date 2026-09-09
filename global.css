@@ -11,7 +11,8 @@
  * one geometric sans throughout, with the monospace stack kept for code and
  * nothing else.
  *
- * The background field reads its colour from these too, through --field.
+ * The background clips are the exception: their colour is baked in, so the
+ * theme only sets how strongly each of the two shows.
  *
  * The active theme is a class on <html> (`theme-light` / `theme-dark`), set by
  * a tiny inline script before paint so there is no flash.
@@ -38,9 +39,10 @@
     --fg-faint: 150 150 160;
     --line: 39 39 42;
     --accent: 99 210 164;
-    /* The drawn field: colour, and how strongly it is laid down. */
-    --field: 112 220 176;
-    --field-alpha: 0.95;
+    /* Only one clip is up at a time; the other waits at zero so a theme
+       change is an opacity cross fade rather than a swap. */
+    --field-dark: 0.8;
+    --field-light: 0;
   }
 
   .theme-light {
@@ -52,8 +54,8 @@
     --fg-faint: 88 88 97;
     --line: 228 228 231;
     --accent: 10 107 79;
-    --field: 10 94 69;
-    --field-alpha: 1;
+    --field-dark: 0;
+    --field-light: 0.72;
   }
 
   html {
@@ -117,6 +119,28 @@
   }
 
   /*
+   * The background clips. Both are laid over each other and both play; the
+   * theme decides which one is visible, and the change between them is an
+   * opacity fade on the same timing as the rest of the page.
+   */
+  .field-clip {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    transition: opacity 420ms ease;
+  }
+
+  .field-clip-dark {
+    opacity: var(--field-dark, 0);
+  }
+
+  .field-clip-light {
+    opacity: var(--field-light, 0);
+  }
+
+  /*
    * Holds the words off the plume without hiding it. Weighted to the left
    * column and the bottom right corner, where the text actually sits, and
    * clear across the middle and upper right so the field still reads.
@@ -126,15 +150,15 @@
     inset: 0;
     background-image: linear-gradient(
         100deg,
-        rgb(var(--bg) / 0.8) 0%,
-        rgb(var(--bg) / 0.55) 22%,
-        rgb(var(--bg) / 0.18) 46%,
-        rgb(var(--bg) / 0) 70%
+        rgb(var(--bg) / 0.92) 0%,
+        rgb(var(--bg) / 0.72) 20%,
+        rgb(var(--bg) / 0.3) 44%,
+        rgb(var(--bg) / 0) 68%
       ),
       radial-gradient(
-        68% 42% at 88% 92%,
-        rgb(var(--bg) / 0.75) 0%,
-        rgb(var(--bg) / 0.32) 50%,
+        70% 45% at 88% 92%,
+        rgb(var(--bg) / 0.85) 0%,
+        rgb(var(--bg) / 0.4) 50%,
         rgb(var(--bg) / 0) 100%
       );
   }
