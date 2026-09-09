@@ -15,7 +15,8 @@ and [Contentlayer](https://www.contentlayer.dev/), with an optional
 - **Numbered rail** — the same list of sections everywhere: the home page lays
   it out inline in its left column, other pages pin it to the left edge on wide
   screens, and a top bar takes over on narrow ones.
-- **Ambient background** — a looping plume of particles at native 720p, tinted
+- **Ambient background** — a 4.5s looping plume of particles at the source's
+  native 720p and a quality that keeps the individual grain, tinted
   phthalo green. Two clips are shipped, one per theme, each with its colour and
   its theme's background baked in, so switching themes is an opacity cross fade
   rather than a blend mode that cannot animate. Only the theme on screen is

@@ -41,7 +41,7 @@
     --accent: 99 210 164;
     /* Only one clip is up at a time; the other waits at zero so a theme
        change is an opacity cross fade rather than a swap. */
-    --field-dark: 0.5;
+    --field-dark: 0.8;
     --field-light: 0;
   }
 
@@ -55,7 +55,7 @@
     --line: 228 228 231;
     --accent: 10 107 79;
     --field-dark: 0;
-    --field-light: 0.5;
+    --field-light: 0.72;
   }
 
   html {
