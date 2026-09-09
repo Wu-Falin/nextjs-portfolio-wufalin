@@ -15,19 +15,18 @@ and [Contentlayer](https://www.contentlayer.dev/), with an optional
 - **Numbered rail** — the same list of sections everywhere: the home page lays
   it out inline in its left column, other pages pin it to the left edge on wide
   screens, and a top bar takes over on narrow ones.
-- **Ambient background** — a 4.5s looping plume of particles, tinted
-  phthalo green. The source is 720x1280, so the clips are enlarged to 2560x1440
-  with lanczos and sharpened at encode time rather than left for the browser to
-  stretch: full bleed on a 2x laptop the browser was blowing 720p up by 2.7x,
-  which is what turned each particle to mush. It now draws them at or below
-  their own size on every common screen. Two clips are shipped, one per theme,
-  each with its colour and its theme's background baked in, so switching themes is an opacity cross fade
-  rather than a blend mode that cannot animate. Only the theme on screen is
-  downloaded; the other waits on its poster until the first time you switch to
-  it. The loop is cut with the tail cross faded back over the head, so it
-  repeats without a seam. Paused while the tab is hidden, and under
-  `prefers-reduced-motion` the still frame is served on its own and no clip is
-  downloaded at all.
+- **Ambient background** — a 6s looping plume of particles, tinted phthalo
+  green, cut to a 320x180 grid and enlarged without smoothing. The source is
+  720x1280, so at full bleed there is never enough of it and the browser's
+  interpolation reads as a mistake; square pixels read as a decision, and at
+  that grid the clips cost about a megabyte each. Two are shipped, one per
+  theme, each with its colour and its theme's background baked in, so switching
+  themes is an opacity cross fade rather than a blend mode that cannot animate.
+  Only the theme on screen is downloaded; the other waits on its poster until
+  the first time you switch to it. The loop is cut with the tail cross faded
+  back over the head, so it repeats without a seam. Paused while the tab is
+  hidden, and under `prefers-reduced-motion` the still frame is served on its
+  own and no clip is downloaded at all.
 - **Words over the field** — a scrim weighted to the left column and the bottom
   right corner, plus a halo in the page colour behind the text, so the plume
   can run at full strength and every block still clears 5.8:1 against the

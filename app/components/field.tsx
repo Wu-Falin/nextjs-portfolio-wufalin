@@ -16,6 +16,11 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
  * holds its poster until the first time you switch to it, which keeps a visit
  * that never touches the toggle to one clip instead of two.
  *
+ * The clips are cut to a 320x180 grid and drawn without smoothing, so the
+ * enlargement lands as square pixels rather than as the soft interpolation
+ * that made the plume look like a mistake. Small enough, at that size, that
+ * quality costs nothing.
+ *
  * A visitor who asks for reduced motion is served the still frames alone and
  * never downloads a clip at all.
  */
@@ -25,7 +30,7 @@ const clips = [
 	{
 		theme: "dark" as ThemeName,
 		src: "/field-dark.mp4",
-		poster: "/field-dark.jpg",
+		poster: "/field-dark.png",
 		// Written out rather than built from the theme name: Tailwind only keeps
 		// the classes it can find as whole strings in the source.
 		className: "field-clip field-clip-dark",
@@ -33,7 +38,7 @@ const clips = [
 	{
 		theme: "light" as ThemeName,
 		src: "/field-light.mp4",
-		poster: "/field-light.jpg",
+		poster: "/field-light.png",
 		className: "field-clip field-clip-light",
 	},
 ];

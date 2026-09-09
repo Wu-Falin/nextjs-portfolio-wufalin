@@ -129,6 +129,12 @@
     height: 100%;
     width: 100%;
     object-fit: cover;
+    /* The clips are cut to a coarse grid on purpose, so enlarge them as square
+       pixels. Smoothing here is what read as a blurry mistake; blocks read as
+       a decision. Older keywords first, so the last one a browser knows wins. */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
     transition: opacity 420ms ease;
   }
 
