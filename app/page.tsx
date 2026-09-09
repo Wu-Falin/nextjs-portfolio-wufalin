@@ -50,7 +50,7 @@ export default function Home() {
 
 				<h1
 					style={delay(200)}
-					className="reveal on-field mt-8 pb-[0.16em] text-[clamp(3.75rem,14vw,11rem)] font-light leading-[1.02] tracking-[0.015em] text-fg"
+					className="reveal on-field hero-name mt-8 pb-[0.16em] text-[clamp(3.75rem,14vw,11rem)] font-light leading-[1.02] tracking-[0.015em] text-fg"
 				>
 					Ng Falin
 				</h1>

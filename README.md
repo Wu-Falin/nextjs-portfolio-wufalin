@@ -12,7 +12,7 @@ and [Contentlayer](https://www.contentlayer.dev/), with an optional
 
 - **Two themes** — light and dark. The choice persists in `localStorage` and is
   applied before first paint so the page never flashes the wrong palette.
-- **Numbered rail** — the same list of sections everywhere: the home page lays
+- **Section rail** — the same list of sections everywhere: the home page lays
   it out inline in its left column, other pages pin it to the left edge on wide
   screens, and a top bar takes over on narrow ones.
 - **Ambient background** — a 6s looping plume of particles, tinted phthalo
@@ -31,10 +31,15 @@ and [Contentlayer](https://www.contentlayer.dev/), with an optional
   right corner, plus a halo in the page colour behind the text, so the plume
   can run at full strength and every block still clears 5.8:1 against the
   ground behind it.
-- **Quiet entrance** — an opening title on each full load, then the page fades
-  in on a stagger, driven by a `--reveal-delay` custom property and switched
-  off entirely for visitors who ask for reduced motion. Moving between sections
-  draws a hairline across the top and replays the section's own entrance.
+- **Quiet entrance** — an opening title on each full load. The curtain fades
+  and the name walks out of the middle of it to where the heading sits, growing
+  and thinning on the way; it lands on the heading's own left edge and the two
+  cross over. That walk is scripted and deliberately additive - if it never
+  runs, the curtain still clears on its own and the heading still arrives under
+  its own entrance. The rest of the page fades in on a stagger, driven by a
+  `--reveal-delay` custom property and switched off entirely for visitors who
+  ask for reduced motion. Moving between sections draws a hairline across the
+  top and replays the section's own entrance.
 
 ## Running locally
 

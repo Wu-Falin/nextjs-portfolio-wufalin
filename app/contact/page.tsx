@@ -54,7 +54,7 @@ export default function ContactPage() {
 						style={delay(80)}
 						className="reveal text-[10px] uppercase tracking-[0.45em] text-faint"
 					>
-						03 / contact
+						contact
 					</p>
 					<h1
 						style={delay(200)}

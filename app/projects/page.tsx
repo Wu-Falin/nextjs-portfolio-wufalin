@@ -40,7 +40,7 @@ export default async function ProjectsPage() {
 						style={delay(80)}
 						className="reveal text-[10px] uppercase tracking-[0.45em] text-faint"
 					>
-						02 / work
+						work
 					</p>
 					<h1
 						style={delay(200)}

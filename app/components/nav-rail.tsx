@@ -14,9 +14,9 @@ type Props = {
 };
 
 /**
- * The numbered list of sections: an index, a dot that fills in for the section
- * you are on, a rule that grows on hover, and the label. The home page lays
- * this out inside its own left column; every other page pins it to the edge.
+ * The list of sections: a dot that fills in for the section you are on, a rule
+ * that grows on hover, and the label. The home page lays this out inside its
+ * own left column; every other page pins it to the edge.
  */
 export const NavRail: React.FC<Props> = ({ stagger }) => {
 	const pathname = usePathname() ?? "/";
@@ -43,14 +43,6 @@ export const NavRail: React.FC<Props> = ({ stagger }) => {
 							aria-current={active ? "page" : undefined}
 							className="group flex items-center gap-4 transition-transform duration-500 ease-out hover:translate-x-1.5"
 						>
-							<span
-								className={`on-field w-5 text-[10px] tabular-nums transition-colors duration-500 ${
-									active ? "text-accent" : "text-faint group-hover:text-fg"
-								}`}
-							>
-								{String(index + 1).padStart(2, "0")}
-							</span>
-
 							<span className="relative flex h-3 w-3 items-center justify-center">
 								<span
 									className={`block rounded-full transition-all duration-700 ease-out ${

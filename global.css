@@ -221,7 +221,9 @@
 
   :root[data-intro] .intro {
     display: flex;
-    animation: intro-lift 900ms 1500ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+    /* Fades rather than wipes: the name walks out of it to the heading, and a
+       wipe would cut across the name on its way. */
+    animation: intro-clear 900ms 1500ms cubic-bezier(0.62, 0, 0.2, 1) forwards;
   }
 
   :root[data-intro] .intro-word {
@@ -262,9 +264,9 @@
   }
 }
 
-@keyframes intro-lift {
+@keyframes intro-clear {
   to {
-    transform: translateY(-100%);
+    opacity: 0;
   }
 }
 
