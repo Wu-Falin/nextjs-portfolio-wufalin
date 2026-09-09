@@ -36,12 +36,12 @@
     --bg-soft: 24 24 27;
     --fg: 244 244 245;
     --fg-muted: 161 161 170;
-    --fg-faint: 113 113 122;
+    --fg-faint: 150 150 160;
     --line: 39 39 42;
     --accent: 99 210 164;
     /* Only one clip is up at a time; the other waits at zero so a theme
        change is an opacity cross fade rather than a swap. */
-    --field-dark: 0.26;
+    --field-dark: 0.5;
     --field-light: 0;
   }
 
@@ -51,11 +51,11 @@
     --bg-soft: 255 255 255;
     --fg: 24 24 27;
     --fg-muted: 82 82 91;
-    --fg-faint: 113 113 122;
+    --fg-faint: 88 88 97;
     --line: 228 228 231;
     --accent: 10 107 79;
     --field-dark: 0;
-    --field-light: 0.24;
+    --field-light: 0.5;
   }
 
   html {
@@ -138,6 +138,38 @@
 
   .field-clip-light {
     opacity: var(--field-light, 0);
+  }
+
+  /*
+   * Holds the words off the plume without hiding it. Weighted to the left
+   * column and the bottom right corner, where the text actually sits, and
+   * clear across the middle and upper right so the field still reads.
+   */
+  .field-scrim {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(
+        100deg,
+        rgb(var(--bg) / 0.92) 0%,
+        rgb(var(--bg) / 0.72) 20%,
+        rgb(var(--bg) / 0.3) 44%,
+        rgb(var(--bg) / 0) 68%
+      ),
+      radial-gradient(
+        70% 45% at 88% 92%,
+        rgb(var(--bg) / 0.85) 0%,
+        rgb(var(--bg) / 0.4) 50%,
+        rgb(var(--bg) / 0) 100%
+      );
+  }
+
+  /*
+   * A halo in the page colour, so glyphs keep their edge wherever the plume
+   * happens to be bright behind them. Cheaper than dimming the whole field,
+   * and it leaves the background at full strength.
+   */
+  .on-field {
+    text-shadow: 0 0 22px rgb(var(--bg)), 0 0 8px rgb(var(--bg) / 0.95);
   }
 
   /* Drawn across the top of the window on each change of section. */
