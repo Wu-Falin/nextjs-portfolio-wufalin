@@ -30,14 +30,12 @@ export const Navigation: React.FC = () => {
 		<header ref={ref} className="lg:hidden">
 			<div
 				className={`fixed inset-x-0 top-0 z-30 border-b backdrop-blur duration-200 ${
-					isIntersecting
-						? "border-transparent bg-bg/0"
-						: "border-line bg-bg/80"
+					isIntersecting ? "border-transparent bg-bg/0" : "border-line bg-bg/80"
 				}`}
 			>
 				<div className="container mx-auto flex flex-row-reverse items-center justify-between p-6">
 					{/* Right padding keeps these clear of the fixed theme toggle. */}
-					<div className="flex items-center gap-6 pr-32">
+					<div className="flex items-center gap-6 pr-24">
 						{sections
 							.filter((section) => section.href !== "/")
 							.map((section) => (
